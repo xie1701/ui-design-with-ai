@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="住明白帮你在见设计师前，把生活、预算和分歧整理成一份说得清的家的说明。">
+<title>住明白｜见面前，先把家说清楚</title>
+<style>
+:root{
+  --bone:#eae5db;
+  --paper:#f5f0e6;
+  --ink:#171817;
+  --ink-muted:#5b5b55;
+  --line:rgba(23,24,23,.22);
+  --red:#d8523a;
+  --red-dark:#a93827;
+  --lime:#d5ef63;
+  --green:#1e3a32;
+  --shadow:0 22px 44px rgba(23,24,23,.14);
+  --serif:Iowan Old Style,"Songti SC","Noto Serif CJK SC",STSong,serif;
+  --sans:"Avenir Next","PingFang SC","Hiragino Sans GB",sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --max:1240px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:var(--bone);overflow-x:hidden}
+body{background:var(--bone);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;overflow-x:hidden}
+img,svg,canvas{max-width:100%}
+a{color:inherit}
+button,a{font:inherit}
+button{color:inherit}
+:focus-visible{outline:3px solid var(--red);outline-offset:4px}
+.skip-link{position:absolute;left:16px;top:-80px;background:var(--lime);color:var(--ink);padding:10px 14px;z-index:30}
+.skip-link:focus{top:16px}
+.wrap{width:min(var(--max),calc(100% - 48px));margin-inline:auto}
+.eyebrow,.index,.stamp,.rail-label{font-family:var(--mono);text-transform:uppercase;letter-spacing:.13em;font-size:11px;line-height:1.4}
+.eyebrow{color:var(--red);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:28px;height:2px;background:currentColor}
+/* header */
+.site-header{border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(234,229,219,.96);z-index:20}
+.header-inner{height:68px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-weight:700;letter-spacing:.04em}
+.brand-mark{width:25px;height:25px;display:grid;place-items:center;background:var(--ink);color:var(--bone);font-family:var(--serif);font-size:15px;line-height:1;transform:rotate(-7deg)}
+.header-meta{display:flex;align-items:center;gap:24px;font-family:var(--mono);font-size:11px;letter-spacing:.08em}
+.header-meta a{text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:2px}
+.header-action{background:var(--red);color:#fff;border:0;padding:9px 14px;cursor:pointer;font-size:13px;font-weight:700;transition:background .15s ease,transform .15s ease}
+.header-action:hover{background:var(--red-dark);transform:translateY(-2px)}
+/* hero */
+.hero{padding:clamp(46px,8vw,100px) 0 90px;position:relative}
+.hero-grid{display:grid;grid-template-columns:minmax(360px,.82fr) minmax(450px,1.18fr);gap:clamp(38px,7vw,110px);align-items:center}
+.hero-copy{position:relative;padding-left:clamp(28px,4vw,66px)}
+.hero-copy::before{content:"OWNER / 01";position:absolute;left:0;top:8px;writing-mode:vertical-rl;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--ink-muted)}
+.hero h1{font-family:var(--serif);font-size:clamp(58px,8.2vw,122px);font-weight:400;line-height:.91;letter-spacing:-.075em;max-width:7ch;margin:25px 0 28px}
+.hero h1 .red{color:var(--red);display:inline-block;margin-left:.32em}
+.hero h1 .line{display:block}
+.hero-lede{font-size:clamp(17px,1.8vw,21px);line-height:1.65;max-width:26em;margin-bottom:30px}
+.hero-lede strong{font-weight:700;text-decoration:underline;text-decoration-color:var(--red);text-decoration-thickness:3px;text-underline-offset:5px}
+.hero-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.primary-link{display:inline-flex;align-items:center;gap:18px;background:var(--ink);color:var(--bone);padding:15px 18px;text-decoration:none;font-weight:700;min-height:52px;transition:background .15s ease,transform .15s ease}
+.primary-link::after{content:"↗";font-size:20px;line-height:0}
+.primary-link:hover{background:var(--red);transform:translateY(-2px)}
+.text-link{font-size:14px;text-decoration-thickness:1px;text-underline-offset:5px}
+.hero-note{margin-top:18px;color:var(--ink-muted);font-size:12px}
+/* life slice */
+.slice-wrap{perspective:1200px;min-width:0;overflow:clip}
+.slice-stage{position:relative;min-height:600px;transform:rotate(2deg);transform-origin:center;isolation:isolate}
+.slice-stage::before{content:"";position:absolute;inset:26px -22px -26px 42px;background:var(--lime);z-index:-2;transform:rotate(-4deg)}
+.slice-stage::after{content:"LIFE SLICE / 01";position:absolute;right:-7px;top:-12px;color:var(--red);font:11px var(--mono);letter-spacing:.14em;transform:rotate(-2deg)}
+.paper-layer{position:absolute;background:var(--paper);border:1px solid var(--ink);box-shadow:var(--shadow);transform-style:preserve-3d;transition:transform .3s ease}
+.paper-back{inset:28px 30px 0 18px;transform:rotate(-4deg) translateZ(-34px);background:#ded8ca}
+.paper-mid{inset:14px 14px 34px 44px;transform:rotate(3deg) translateZ(-16px);background:#efe9dc}
+.paper-front{inset:0 0 62px 0;padding:28px 28px 22px;transform:rotate(-1.5deg) translateZ(0);overflow:hidden}
+.slice-stage:hover .paper-front{transform:rotate(-1.5deg) translate3d(-5px,-5px,22px)}
+.slice-head{display:flex;justify-content:space-between;align-items:start;border-bottom:1px solid var(--line);padding-bottom:15px;position:relative;z-index:2}
+.slice-head h2{font:400 clamp(26px,3vw,42px)/1 var(--serif);letter-spacing:-.04em}
+.slice-head .stamp{color:var(--red);border:1px solid var(--red);padding:5px 7px;transform:rotate(4deg)}
+.room-evidence{height:390px;position:relative;margin:15px 0 5px;overflow:hidden;background:#e5dfd3}
+.room-evidence::before{content:"";position:absolute;inset:15px;border:1px solid rgba(23,24,23,.3);background:linear-gradient(90deg,transparent 49.7%,rgba(23,24,23,.25) 50%,transparent 50.3%),linear-gradient(0deg,transparent 49.7%,rgba(23,24,23,.25) 50%,transparent 50.3%);background-size:100% 100%,100% 100%}
+.room-frame{position:absolute;inset:48px 44px 52px;display:grid;grid-template-columns:1fr 1.18fr;grid-template-rows:1fr 1fr;border:2px solid var(--ink);transform:rotate(-1deg)}
+.room-frame span{border:1px solid var(--ink);display:block;position:relative}
+.room-frame span:nth-child(1)::after{content:"睡"}.room-frame span:nth-child(2)::after{content:"光"}.room-frame span:nth-child(3)::after{content:"吃"}.room-frame span:nth-child(4)::after{content:"收"}
+.room-frame span::after{position:absolute;right:10px;bottom:8px;font:26px var(--serif);opacity:.42}
+.room-door{position:absolute;width:42px;height:80px;right:17px;top:106px;border:2px solid var(--red);border-left:0;transform:rotate(11deg)}
+.room-measure{position:absolute;left:30px;bottom:21px;right:35px;border-top:1px solid var(--red);color:var(--red);font:10px var(--mono);letter-spacing:.04em;padding-top:5px}
+.room-measure::before,.room-measure::after{content:"";position:absolute;top:-5px;width:1px;height:10px;background:var(--red)}
+.room-measure::before{left:0}.room-measure::after{right:0}
+#room-scan{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.evidence-label{position:absolute;background:var(--red);color:#fff;padding:5px 8px;font-size:12px;line-height:1.35;z-index:3;box-shadow:3px 3px 0 var(--ink)}
+.evidence-label.one{left:24px;top:34px;transform:rotate(-4deg)}
+.evidence-label.two{right:12px;top:190px;transform:rotate(5deg)}
+.evidence-label.three{left:78px;bottom:25px;transform:rotate(-2deg);background:var(--green)}
+.slice-caption{display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:var(--ink-muted)}
+.slice-caption span:last-child{text-align:right;font-family:var(--mono);font-size:10px;max-width:16em}
+.slice-index{position:absolute;right:-3px;bottom:6px;color:var(--red);font:100px/.8 var(--serif);opacity:.22;z-index:-1}
+/* section commons */
+.section{padding:95px 0}
+.section-rule{border-top:1px solid var(--line)}
+.section-heading{display:grid;grid-template-columns:90px minmax(0,1fr);gap:20px;margin-bottom:40px}
+.section-heading .index{color:var(--red);padding-top:9px}
+.section-heading h2{font:400 clamp(37px,5vw,70px)/.98 var(--serif);letter-spacing:-.06em;max-width:10em}
+.section-heading p{grid-column:2;max-width:34em;color:var(--ink-muted);margin-top:-20px}
+/* steps */
+.steps{display:grid;grid-template-columns:1.4fr 1fr 1fr;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+.step{min-height:220px;padding:25px 25px 30px;border-right:1px solid var(--line);position:relative}
+.step:last-child{border:0}
+.step:first-child{background:var(--ink);color:var(--bone)}
+.step .step-no{font:12px var(--mono);color:var(--red);display:block;margin-bottom:42px}
+.step:first-child .step-no{color:var(--lime)}
+.step h3{font:400 clamp(25px,2.5vw,37px)/1.05 var(--serif);letter-spacing:-.04em;margin-bottom:13px}
+.step p{font-size:14px;max-width:22em;color:var(--ink-muted)}
+.step:first-child p{color:rgba(234,229,219,.78)}
+.step .edge{position:absolute;bottom:20px;right:20px;font:11px var(--mono);color:var(--red)}
+/* interaction */
+.conflict-section{background:var(--green);color:var(--bone);position:relative;overflow:hidden}
+.conflict-section::before{content:"分歧先放在桌面上";position:absolute;right:-30px;top:34px;font:clamp(70px,13vw,180px)/.8 var(--serif);color:rgba(213,239,99,.08);white-space:nowrap;pointer-events:none}
+.conflict-section .section-heading .index{color:var(--lime)}
+.conflict-section .section-heading p{color:rgba(234,229,219,.68)}
+.conflict-layout{display:grid;grid-template-columns:minmax(170px,.45fr) 1.55fr;gap:clamp(30px,6vw,90px);position:relative}
+.conflict-tabs{display:flex;flex-direction:column;align-items:stretch;border-left:1px solid rgba(234,229,219,.35)}
+.conflict-tab{border:0;border-bottom:1px solid rgba(234,229,219,.25);background:transparent;color:rgba(234,229,219,.65);text-align:left;padding:16px 16px;cursor:pointer;position:relative;transition:color .15s ease,background .15s ease;font-size:14px}
+.conflict-tab::before{content:"";position:absolute;left:-1px;top:0;bottom:0;width:3px;background:transparent}
+.conflict-tab:hover,.conflict-tab[aria-pressed="true"]{color:var(--lime);background:rgba(0,0,0,.12)}
+.conflict-tab[aria-pressed="true"]::before{background:var(--lime)}
+.conflict-panel{min-height:310px;border:1px solid rgba(234,229,219,.38);padding:clamp(24px,4vw,44px);position:relative;background:rgba(23,24,23,.16)}
+.conflict-panel::after{content:"NOT A VERDICT / A PLACE TO START";position:absolute;right:20px;bottom:18px;color:rgba(234,229,219,.4);font:10px var(--mono);letter-spacing:.1em}
+.conflict-panel h3{font:400 clamp(31px,4vw,55px)/1 var(--serif);letter-spacing:-.04em;margin-bottom:15px;color:var(--lime)}
+.conflict-panel p{max-width:37em;color:rgba(234,229,219,.86);font-size:16px}
+.conflict-panel .example{margin-top:30px;border-top:1px solid rgba(234,229,219,.3);padding-top:15px;display:flex;gap:16px;font-size:13px}
+.example b{color:var(--red);font-family:var(--mono);font-size:11px;letter-spacing:.1em;min-width:62px}
+/* why */
+.why-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(36px,9vw,130px);align-items:start}
+.pull-quote{font:400 clamp(38px,5.7vw,78px)/.96 var(--serif);letter-spacing:-.07em;max-width:6em;position:relative}
+.pull-quote::before{content:"“";color:var(--red);position:absolute;font-size:2em;left:-.32em;top:-.13em;z-index:-1}
+.why-list{border-top:1px solid var(--ink)}
+.why-item{display:grid;grid-template-columns:42px 1fr;gap:18px;padding:22px 0;border-bottom:1px solid var(--line)}
+.why-item .number{font:12px var(--mono);color:var(--red);padding-top:4px}
+.why-item h3{font-size:18px;margin-bottom:4px}
+.why-item p{font-size:14px;color:var(--ink-muted);max-width:36em}
+/* share */
+.share-section{background:var(--red);color:#fff}
+.share-section .eyebrow{color:var(--lime)}
+.share-layout{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,8vw,120px);align-items:end}
+.share-layout h2{font:400 clamp(39px,5.3vw,75px)/.95 var(--serif);letter-spacing:-.07em;margin:24px 0 22px;max-width:7em}
+.share-layout p{max-width:31em;color:rgba(255,255,255,.87)}
+.share-tool{border:1px solid rgba(255,255,255,.62);padding:22px;background:rgba(23,24,23,.13)}
+.share-tool .tool-label{font:11px var(--mono);letter-spacing:.12em;color:var(--lime);display:block;margin-bottom:10px}
+.share-tool input{width:100%;height:44px;border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.13);color:#fff;padding:0 12px;font-size:13px;margin-bottom:10px}
+.share-tool input:focus{outline:3px solid var(--lime);outline-offset:2px}
+.share-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.copy-button{background:var(--lime);border:0;color:var(--ink);font-weight:700;padding:11px 14px;cursor:pointer;min-height:44px;transition:background .15s ease,transform .15s ease}
+.copy-button:hover{background:#edfca5;transform:translateY(-2px)}
+.copy-status{font-size:12px;color:rgba(255,255,255,.8);min-height:20px}
+/* faq/final */
+.faq-section{padding-bottom:70px}
+.faq-list{max-width:850px;margin-left:110px;border-top:1px solid var(--ink)}
+details{border-bottom:1px solid var(--line);padding:0}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px 0;font-size:17px;font-weight:700}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:25px var(--serif);color:var(--red);transition:transform .15s ease}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--ink-muted);font-size:14px;max-width:60em;padding:0 40px 23px 0}
+.final-section{background:var(--ink);color:var(--bone);padding:90px 0 100px;position:relative;overflow:hidden}
+.final-section::before{content:"说清楚，再出发";position:absolute;right:-1vw;bottom:-28px;color:rgba(234,229,219,.07);font:clamp(76px,16vw,220px)/.8 var(--serif);white-space:nowrap;pointer-events:none}
+.final-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:end}
+.final-inner h2{font:400 clamp(46px,6vw,88px)/.9 var(--serif);letter-spacing:-.075em;max-width:7em}
+.final-inner p{color:rgba(234,229,219,.74);max-width:27em;margin-bottom:22px}
+.final-link{background:var(--lime);color:var(--ink);display:inline-flex;align-items:center;gap:20px;padding:16px 18px;text-decoration:none;font-weight:700;min-height:54px;transition:background .15s ease,transform .15s ease}
+.final-link::after{content:"↗";font-size:20px}
+.final-link:hover{background:#efffa3;transform:translateY(-2px)}
+.footer{padding:24px 0;border-top:1px solid rgba(234,229,219,.2);background:var(--ink);color:rgba(234,229,219,.65);font:11px var(--mono)}
+.footer-inner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+/* responsive */
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr;gap:58px}.hero-copy{max-width:700px}.slice-stage{max-width:720px;margin-inline:auto}
+  .steps{grid-template-columns:1fr 1fr}.step:first-child{grid-column:1/-1;min-height:190px}.step:nth-child(2){border-right:1px solid var(--line)}
+  .why-grid{grid-template-columns:1fr 1fr}.share-layout,.final-inner{grid-template-columns:1fr;align-items:start}.share-layout h2{max-width:9em}.faq-list{margin-left:50px}
+}
+@media (max-width:620px){
+  .wrap{width:min(var(--max),calc(100% - 32px))}.header-inner{height:58px}.header-meta{gap:12px}.header-meta span{display:none}.header-action{padding:8px 10px;font-size:12px}
+  .hero{padding-top:42px;padding-bottom:60px}.hero-copy{padding-left:25px}.hero-copy::before{font-size:9px;top:4px}.hero h1{font-size:clamp(56px,17vw,86px);margin-top:22px}.hero-lede{font-size:16px}.hero-actions{gap:14px}.slice-stage{min-height:480px;transform:rotate(1deg)}.paper-front{inset:0 0 44px;padding:19px 17px 15px}.paper-mid{inset:10px 9px 23px 25px}.paper-back{inset:19px 15px 0 8px}.room-evidence{height:290px;margin-top:12px}.room-frame{inset:34px 25px 42px}.evidence-label{font-size:10px;padding:4px 6px}.evidence-label.one{left:12px;top:23px}.evidence-label.two{right:4px;top:145px}.evidence-label.three{left:34px;bottom:15px}.room-door{right:8px;top:78px;width:27px;height:54px}.room-measure{left:15px;right:15px;bottom:13px}.slice-head h2{font-size:26px}.slice-caption{font-size:11px}.slice-index{font-size:72px}
+  .section{padding:64px 0}.section-heading{grid-template-columns:52px 1fr;gap:12px;margin-bottom:28px}.section-heading h2{font-size:44px}.section-heading p{grid-column:2;margin-top:-12px;font-size:14px}.steps{display:block}.step,.step:first-child{border-right:0;border-bottom:1px solid var(--line);min-height:0;padding:20px}.step:last-child{border-bottom:0}.step .step-no{margin-bottom:27px}
+  .conflict-layout{grid-template-columns:1fr;gap:24px}.conflict-tabs{display:grid;grid-template-columns:repeat(3,1fr);border-left:0;border-bottom:1px solid rgba(234,229,219,.35)}.conflict-tab{padding:12px 8px;font-size:12px;border-right:1px solid rgba(234,229,219,.25);border-bottom:0;text-align:center}.conflict-tab:last-child{border-right:0}.conflict-tab::before{left:0;right:0;bottom:-1px;top:auto;width:auto;height:3px}.conflict-panel{min-height:345px;padding:24px 18px}.conflict-panel h3{font-size:38px}.conflict-panel p{font-size:15px}
+  .why-grid{grid-template-columns:1fr;gap:45px}.pull-quote{font-size:58px}.why-item{grid-template-columns:31px 1fr}.why-item h3{font-size:17px}
+  .share-tool{padding:16px}.share-tool input{font-size:12px}.faq-list{margin-left:0}summary{font-size:15px}.final-inner h2{font-size:58px}.footer-inner{display:block}.footer-inner span{display:block;margin-top:8px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .slice-stage:hover .paper-front{transform:rotate(-1.5deg)}
+}
+@media (max-width:340px){
+  .wrap{width:calc(100% - 24px)}.header-action{font-size:11px}.hero h1{font-size:53px}.hero-copy{padding-left:21px}.conflict-tabs{grid-template-columns:1fr}.conflict-tab{border-right:0;border-bottom:1px solid rgba(234,229,219,.25)}.conflict-tab:last-child{border-bottom:0}.conflict-tab::before{right:auto;width:3px;top:0;bottom:0;height:auto}.final-inner h2{font-size:51px}
+}
+/* identity correction: the table is an editing surface, not a blueprint */
+.room-evidence{background:#dfe8d1;border:1px solid rgba(23,24,23,.28)}
+.room-evidence::before{content:"FIELD NOTE  /  DAILY TRACE";inset:16px;border:1px solid rgba(23,24,23,.28);background:none;color:var(--ink);font:10px var(--mono);letter-spacing:.12em;padding:10px;}
+.room-frame,.room-door{display:none}
+.room-evidence::after{content:"一张桌面，三件不能再将就的事";position:absolute;left:26px;top:74px;max-width:9em;color:var(--ink);font:400 clamp(24px,3vw,40px)/.98 var(--serif);letter-spacing:-.04em;z-index:1}
+.steps{display:block;position:relative;padding:0 0 0 clamp(48px,8vw,110px);border:0;border-top:1px solid var(--ink);background:transparent;overflow:visible}
+.steps::before{content:"";position:absolute;left:clamp(18px,3vw,42px);top:0;bottom:0;border-left:1px solid var(--red)}
+.step,.step:first-child{min-height:0;padding:34px 0 38px;background:transparent;color:var(--ink);border:0;border-bottom:1px solid var(--line);position:relative}
+.step:last-child{border-bottom:0}
+.step:first-child .step-no{color:var(--red)}
+.step:first-child p{color:var(--ink-muted)}
+.step:nth-child(2){margin-left:12%;max-width:660px}
+.step:nth-child(3){margin-left:25%;max-width:580px}
+.step .edge{right:0}
+.conflict-section{background:var(--bone);color:var(--ink);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.conflict-section::before{color:rgba(23,24,23,.06)}
+.conflict-section .section-heading p{color:var(--ink-muted)}
+.conflict-section .section-heading .index{color:var(--red)}
+.conflict-tabs{border-left-color:var(--line)}
+.conflict-tab{color:var(--ink-muted);border-bottom-color:var(--line)}
+.conflict-tab:hover,.conflict-tab[aria-pressed="true"]{color:var(--red);background:rgba(216,82,58,.08)}
+.conflict-tab[aria-pressed="true"]::before{background:var(--red)}
+.conflict-panel{background:var(--ink);border-color:var(--ink);}
+.share-section{background:var(--green);color:var(--bone)}
+@media (max-width:620px){
+  .steps{padding-left:38px}
+  .steps::before{left:14px}
+  .step,.step:first-child{padding:26px 0 30px}
+  .step:nth-child(2),.step:nth-child(3){margin-left:0;max-width:none}
+  .room-evidence::after{left:20px;top:60px;font-size:29px}
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="#top" aria-label="住明白首页"><span class="brand-mark" aria-hidden="true">住</span><span>住明白</span></a>
+    <div class="header-meta"><span>OWNER'S EDITING TABLE</span><a href="#faq">常见问题</a><a class="header-action" href="#start">开始梳理</a></div>
+  </div>
+</header>
+<main id="main">
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">见面前，先懂你家</p>
+        <h1 id="hero-title"><span class="line">把家</span><span class="line red">说清楚</span></h1>
+        <p class="hero-lede">在见设计师之前，先把每天怎么住、钱花在哪里、家里谁在意什么，整理成一份<strong>你自己看得懂</strong>的说明。</p>
+        <div class="hero-actions" id="start">
+          <a class="primary-link" href="#how">开始梳理我家</a>
+          <a class="text-link" href="#conflicts">先看看怎么梳理</a>
+        </div>
+        <p class="hero-note">约 10 分钟 · 不需要装修术语 · 内容由你决定是否分享</p>
+      </div>
+      <div class="slice-wrap" aria-label="生活切片：一个家庭的房间证据正在被整理">
+        <div class="slice-stage">
+          <div class="paper-layer paper-back" aria-hidden="true"></div>
+          <div class="paper-layer paper-mid" aria-hidden="true"></div>
+          <div class="paper-layer paper-front">
+            <div class="slice-head"><h2>生活切片</h2><span class="stamp">正在整理</span></div>
+            <div class="room-evidence">
+              <div class="room-frame" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+              <div class="room-door" aria-hidden="true"></div>
+              <div class="room-measure">早上 07:40 ─────────── 晚上 22:30</div>
+              <span class="evidence-label one">光线：早上很好</span>
+              <span class="evidence-label two">餐桌要能摊开电脑</span>
+              <span class="evidence-label three">收纳不是越多越好</span>
+              <canvas id="room-scan" aria-hidden="true"></canvas>
+            </div>
+            <div class="slice-caption"><span>不是平面图，是住在这里的证据。</span><span>ROOM / DAILY TRACE<br>NO. 001—003</span></div>
+          </div>
+          <span class="slice-index" aria-hidden="true">01</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-rule" id="how" aria-labelledby="how-title">
+    <div class="wrap">
+      <div class="section-heading"><span class="index">01 / PROCESS</span><h2 id="how-title">先收集生活，<br>再讨论方案。</h2><p>不从“喜欢什么风格”开始。我们先从真实的动作、习惯和不能让步的事开始。</p></div>
+      <div class="steps">
+        <article class="step"><span class="step-no">01 — 记录</span><h3>把每天怎么住写下来</h3><p>几个人住、几点回家、衣服晾在哪里、哪一盏灯总觉得不够亮。你的生活细节，就是第一手资料。</p><span class="edge">生活证据</span></article>
+        <article class="step"><span class="step-no">02 — 对照</span><h3>让分歧先露出来</h3><p>预算、收纳、开放式厨房，哪些是愿望，哪些是必须？先排好顺序，才知道该谈什么。</p><span class="edge">优先级</span></article>
+        <article class="step"><span class="step-no">03 — 带走</span><h3>生成一份见面底稿</h3><p>带着这份说明去见设计师，不用从头解释，也不用假装自己已经想明白。</p><span class="edge">可分享</span></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section conflict-section" id="conflicts" aria-labelledby="conflict-title">
+    <div class="wrap">
+      <div class="section-heading"><span class="index">02 / EDIT</span><h2 id="conflict-title">有些问题，<br>越早摆上桌越好。</h2><p>梳理不是替你做决定，而是把模糊的“都想要”变成可以一起商量的顺序。</p></div>
+      <div class="conflict-layout">
+        <div class="conflict-tabs" role="group" aria-label="需求冲突类型">
+          <button class="conflict-tab" type="button" data-conflict="budget" aria-pressed="true">预算</button>
+          <button class="conflict-tab" type="button" data-conflict="flow" aria-pressed="false">动线</button>
+          <button class="conflict-tab" type="button" data-conflict="people" aria-pressed="false">两个人</button>
+        </div>
+        <div class="conflict-panel" aria-live="polite">
+          <h3 id="conflict-heading">想要很多，钱先花在哪？</h3>
+          <p id="conflict-copy">把“全屋都想做好”拆成住得最常用的三件事：每天都会碰到的、现在最不顺的、可以晚一点的。预算不再是一句总数，而是一张有顺序的单子。</p>
+          <div class="example"><b>先记这一句</b><span id="conflict-example">“厨房可以晚点升级，但收纳和照明不能再将就。”</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-rule" aria-labelledby="why-title">
+    <div class="wrap why-grid">
+      <div><p class="eyebrow">为什么见面前</p><p class="pull-quote">先把自己的话，听一遍。</p></div>
+      <div class="why-list" id="why-title">
+        <article class="why-item"><span class="number">01</span><div><h3>你会知道自己真正不能让的是什么</h3><p>不是把愿望删掉，而是分清“这件事影响每天”和“这件事只是看起来不错”。</p></div></article>
+        <article class="why-item"><span class="number">02</span><div><h3>家里人的意见可以放在同一张桌上</h3><p>不同答案不代表谁错了。先看见分歧，见面时才有机会一起找到取舍。</p></div></article>
+        <article class="why-item"><span class="number">03</span><div><h3>设计师拿到的是生活，不只是一张户型图</h3><p>一份有上下文的需求说明，让第一次交流从你的真实场景开始。</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section share-section" aria-labelledby="share-title">
+    <div class="wrap share-layout">
+      <div><p class="eyebrow">给设计师的转发区</p><h2 id="share-title">把这张桌子，带去见面。</h2><p>正在和设计师约时间？把住明白发给对方。先读到你的生活，再一起聊空间，会更容易从“你想要什么”聊到“为什么”。</p></div>
+      <div class="share-tool">
+        <label class="tool-label" for="share-url">可复制的介绍链接</label>
+        <input id="share-url" type="text" value="住明白｜见面前，先把家说清楚" readonly aria-describedby="copy-status">
+        <div class="share-actions"><button class="copy-button" type="button" id="copy-button">复制介绍</button><span class="copy-status" id="copy-status" role="status" aria-live="polite"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section faq-section" id="faq" aria-labelledby="faq-title">
+    <div class="wrap">
+      <div class="section-heading"><span class="index">03 / NOTES</span><h2 id="faq-title">还有几个<br>想先问的。</h2><p>把边界说在前面，你可以更安心地开始。</p></div>
+      <div class="faq-list">
+        <details><summary>我不会用装修专业词，也可以吗？</summary><p>可以。你只需要说自己的生活，不需要先学会“动线”或“承重墙”。我们会把你的原话整理成见面时更容易使用的说明。</p></details>
+        <details><summary>我还没有确定要找哪位设计师，能先用吗？</summary><p>可以。先梳理自己的需求不依赖设计师，也不要求你现在做出选择；你可以在准备好时，把说明分享给你想聊的人。</p></details>
+        <details><summary>这份内容谁能看到？</summary><p>内容属于你。是否分享、分享给谁，由你决定。页面不会因为你还没准备好，就替你把信息交出去。</p></details>
+        <details><summary>家庭成员意见不一样，怎么填？</summary><p>把不同答案都留下。分歧不是需要藏起来的错误，它正是见面时值得优先讨论的部分。</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-section" aria-labelledby="final-title">
+    <div class="wrap final-inner"><div><p class="eyebrow">下一张纸，从你开始</p><h2 id="final-title">先把家说清楚，再出发。</h2></div><div><p>不用等到所有答案都有了。先花 10 分钟，把现在想到的留下来，后面的讨论才有地方落脚。</p><a class="final-link" href="#top">开始梳理我家</a></div></div>
+  </section>
+</main>
+<footer class="footer"><div class="wrap footer-inner"><span>住明白 · 生活现场的编辑桌</span><span>© 2026 住明白</span></div></footer>
+<script>
+(function(){
+  var motionOK=window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  var canvas=document.getElementById('room-scan');
+  var stage=document.querySelector('.room-evidence');
+  if(canvas&&stage){
+    var ctx=canvas.getContext('2d');
+    var pointer={x:.5,y:.5}, target={x:.5,y:.5}, scan=0;
+    function size(){var rect=stage.getBoundingClientRect(),ratio=window.devicePixelRatio||1;canvas.width=rect.width*ratio;canvas.height=rect.height*ratio;canvas.style.width=rect.width+'px';canvas.style.height=rect.height+'px';ctx.setTransform(ratio,0,0,ratio,0,0)}
+    function draw(){
+      var w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;
+      pointer.x+=(target.x-pointer.x)*.08;pointer.y+=(target.y-pointer.y)*.08;
+      ctx.clearRect(0,0,w,h);var ox=(pointer.x-.5)*10,oy=(pointer.y-.5)*7;
+      ctx.save();ctx.translate(ox,oy);ctx.strokeStyle='rgba(216,82,58,.7)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(w*.12,h*.18);ctx.lineTo(w*.85,h*.18);ctx.lineTo(w*.85,h*.75);ctx.lineTo(w*.12,h*.75);ctx.closePath();ctx.stroke();
+      ctx.beginPath();ctx.moveTo(w*.5,h*.18);ctx.lineTo(w*.5,h*.75);ctx.moveTo(w*.12,h*.47);ctx.lineTo(w*.85,h*.47);ctx.stroke();ctx.restore();
+      if(motionOK){scan=(scan+.7)%h;ctx.strokeStyle='rgba(213,239,99,.72)';ctx.beginPath();ctx.moveTo(0,scan);ctx.lineTo(w,scan);ctx.stroke();requestAnimationFrame(draw)}
+    }
+    size();draw();window.addEventListener('resize',size,{passive:true});
+    if(motionOK)stage.addEventListener('pointermove',function(e){var r=stage.getBoundingClientRect();target.x=(e.clientX-r.left)/r.width;target.y=(e.clientY-r.top)/r.height},{passive:true});
+  }
+  var conflict={
+    budget:{title:'想要很多，钱先花在哪？',copy:'把“全屋都想做好”拆成住得最常用的三件事：每天都会碰到的、现在最不顺的、可以晚一点的。预算不再是一句总数，而是一张有顺序的单子。',example:'“厨房可以晚点升级，但收纳和照明不能再将就。”'},
+    flow:{title:'每一天，哪里最绕？',copy:'从起床到出门，从买菜到收拾，不用画专业平面图，只要标出反复折返的地方。好方案先让生活少走几步。',example:'“洗完衣服到阳台要穿过客厅，这条路每天都在走。”'},
+    people:{title:'两个人，谁在意什么？',copy:'把“我们都觉得可以”换成各自的一句话：谁需要安静，谁想要一起吃饭，谁愿意为它让出一点面积。不同答案可以同时存在。',example:'“我想要看得见孩子，你想要回家先有一块安静的地方。”'}
+  };
+  var tabs=document.querySelectorAll('.conflict-tab');
+  tabs.forEach(function(tab){tab.addEventListener('click',function(){var item=conflict[tab.dataset.conflict];tabs.forEach(function(other){other.setAttribute('aria-pressed',other===tab?'true':'false')});document.getElementById('conflict-heading').textContent=item.title;document.getElementById('conflict-copy').textContent=item.copy;document.getElementById('conflict-example').textContent=item.example})});
+  var copy=document.getElementById('copy-button'),input=document.getElementById('share-url'),status=document.getElementById('copy-status');
+  if(copy&&input){copy.addEventListener('click',function(){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(input.value).then(function(){status.textContent='已复制，可以发给设计师。'},function(){status.textContent='请手动选择文字复制。'})}else{input.select();status.textContent='文字已选中，可以复制。'}})}
+})();
+</script>
+</body>
+</html>
