@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>住明白 · 见面前，先懂你家</title>
+<meta name="description" content="住明白帮你在见设计师之前，把需求、预算和纠结整理成一张看得懂的家的说明。">
+<style>
+:root{
+  --ink:#16324A; --ink-soft:rgba(22,50,74,.85);
+  --paper:#F7F8F6; --card:#FFFFFF;
+  --line:rgba(22,50,74,.16); --line-strong:rgba(22,50,74,.34);
+  --accent:#D6482B; --accent-cta:#C0391D; --accent-ink:#A33318; --accent-dark:#FF9C82;
+  --note:#FFE8A3; --note-line:#E0C468;
+  --r-note:4px; --r-card:12px;
+  --sec:clamp(48px,6vw,72px);
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--ink);background:var(--paper);line-height:1.7;font-size:16px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* header */
+header{position:sticky;top:0;background:rgba(247,248,246,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);z-index:10}
+.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.brand .mark{width:22px;height:22px;border:1.5px solid var(--ink);border-radius:2px;position:relative;flex:none}
+.brand .mark::after{content:"";position:absolute;inset:4px 3px auto 3px;height:1.5px;background:var(--accent)}
+@media (max-width:430px){.brand .text{font-size:15px}}
+.nav .cta-small{font-size:14px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;font-size:16px;font-weight:600;text-decoration:none;cursor:pointer;transition:transform .12s ease,background .15s ease,border-color .15s ease;border:none;white-space:nowrap}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--accent-cta);color:#fff;padding:14px 28px;border-radius:999px;min-height:48px}
+.btn-primary:hover{background:var(--accent-ink)}
+.btn-ghost{background:transparent;color:var(--ink);padding:14px 22px;border-radius:999px;min-height:48px;border:1px solid var(--line-strong)}
+.btn-ghost:hover{border-color:var(--ink)}
+.cta-small.btn-primary{padding:9px 16px;min-height:40px;font-size:14px}
+
+/* hero */
+.hero{padding:clamp(40px,7vw,68px) 0 0}
+.hero .kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.14em;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:var(--card)}
+.hero .kicker i{width:7px;height:7px;background:var(--accent);border-radius:1px}
+.hero h1{font-size:clamp(28px,5.4vw,46px);line-height:1.28;letter-spacing:.01em;font-weight:600;margin:20px 0 14px;max-width:16em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .sub{font-size:clamp(15px,2vw,18px);color:var(--ink-soft);max-width:32em;margin-bottom:28px}
+.hero .actions{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px}
+.hero .micro,.final .micro{font-size:13px;color:var(--ink-soft)}
+.mini-note{display:inline-flex;align-items:center;margin-top:14px;background:var(--note);border:1px solid var(--note-line);border-radius:var(--r-note);box-shadow:2px 2px 0 rgba(22,50,74,.12);padding:5px 12px;font-size:12px;font-weight:600;color:#3A2E0C;transform:rotate(-1deg)}
+
+/* board: plan + notes panel */
+.board{margin-top:clamp(32px,5vw,48px);border:1px solid var(--line-strong);border-radius:var(--r-card);background:var(--card);overflow:hidden}
+.board svg.plan{display:block;width:100%;height:auto}
+.notes{display:flex;flex-direction:column;gap:12px;padding:16px;border-top:1px dashed var(--line)}
+@media (min-width:720px){.board{display:grid;grid-template-columns:1fr 250px}.notes{border-top:none;border-left:1px dashed var(--line);justify-content:center;align-content:center}}
+.note{background:var(--note);border:1px solid var(--note-line);border-radius:var(--r-note);box-shadow:3px 3px 0 rgba(22,50,74,.14);padding:12px 14px;font-size:13px;line-height:1.6;color:#3A2E0C}
+.note:nth-child(odd){transform:rotate(-.9deg)}
+.note:nth-child(even){transform:rotate(.8deg)}
+@media (min-width:720px){
+ .note:nth-child(odd){transform:rotate(-1.4deg)}
+ .note:nth-child(even){transform:rotate(1.2deg)}
+}
+.note b{display:block;font-size:14px;color:#2E240A;margin-bottom:2px}
+.note.alt{background:#FFF3C9}
+
+/* sections */
+section{padding:var(--sec) 0}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:28px}
+.sec-head .no{font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:3px}
+.sec-head h2{font-size:clamp(20px,3.4vw,28px);font-weight:600;letter-spacing:.01em}
+.steps{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden}
+@media (min-width:720px){.steps{grid-template-columns:repeat(3,1fr)}}
+.step{background:var(--card);padding:26px 24px}
+.step .n{font-size:13px;color:var(--accent);font-weight:600}
+.step h3{font-size:17px;margin:8px 0 6px;font-weight:600}
+.step p{font-size:14px;color:var(--ink-soft)}
+
+.why{background:var(--ink);color:#EAF0F4;border-radius:var(--r-card)}
+.why .sec-head .no{color:var(--accent-dark);border-color:var(--accent-dark)}
+.why .wrap{display:grid;gap:28px}
+@media (min-width:900px){.why .wrap{grid-template-columns:280px 1fr;gap:56px;align-items:start}}
+.why ul{list-style:none;display:grid;gap:20px;max-width:36em}
+.why li{font-size:15px;color:rgba(234,240,244,.9);display:flex;gap:14px}
+.why li i{flex:none;width:10px;height:10px;margin-top:9px;background:var(--accent-dark);border-radius:1px}
+.why li b{color:#fff;font-weight:600}
+.why li .lead{color:#fff;font-weight:600}
+.why .note{max-width:26em;color:#3A2E0C}
+.why .note b{color:#2E240A}
+
+.designer{border:1px solid var(--line);border-radius:var(--r-card);background:var(--card);padding:clamp(24px,4vw,40px);display:grid;gap:10px}
+.designer h2{font-size:clamp(19px,3vw,24px);font-weight:600}
+.designer p{color:var(--ink-soft);font-size:15px;max-width:36em}
+.designer .quote{border-left:3px solid var(--accent);padding:4px 0 4px 14px;font-size:15px;margin:6px 0}
+
+.faq{max-width:720px}
+details{border-bottom:1px solid var(--line);padding:16px 0}
+details summary{cursor:pointer;font-weight:600;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:32px}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-size:20px;color:var(--accent);font-weight:400;transition:transform .15s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{padding-top:10px;font-size:15px;color:var(--ink-soft)}
+
+/* final + footer */
+.final{text-align:center;padding-bottom:calc(var(--sec) + 8px)}
+.final h2{font-size:clamp(22px,4vw,32px);font-weight:600;margin-bottom:10px}
+.final p{color:var(--ink-soft);margin-bottom:12px}
+.final .micro{font-size:13px;margin-bottom:26px}
+footer{border-top:1px solid var(--line);padding:26px 0 34px;font-size:13px;color:var(--ink-soft)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between}
+footer nav{display:flex;gap:20px}
+footer a{text-decoration:none}
+footer a:hover{color:var(--ink)}
+
+@media (prefers-reduced-motion:no-preference){
+ .note{opacity:0;animation:stick .45s ease-out forwards}
+ .note:nth-child(2){animation-delay:.12s}.note:nth-child(3){animation-delay:.26s}
+ @keyframes stick{from{opacity:0;translate:0 6px}to{opacity:1;translate:0 0}}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#"><span class="mark" aria-hidden="true"></span><span class="text">住明白</span></a>
+    <a class="btn btn-primary cta-small" href="#start">开始梳理我家</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="wrap">
+      <span class="kicker"><i aria-hidden="true"></i>见面前，先懂你家</span>
+      <h1 id="hero-h">见设计师之前，<br>先把<em>家</em>想清楚</h1>
+      <p class="sub">住明白帮你把需求、预算和纠结，整理成一张看得懂的家的说明。让你和设计师的第一次见面，就聊在点子上。</p>
+      <div class="actions" id="start">
+        <a class="btn btn-primary" href="#">开始梳理我家</a>
+        <a class="btn btn-ghost" href="#how">它怎么用</a>
+      </div>
+      <p class="micro">免费开始 · 约 10 分钟 · 不需要任何装修知识</p>
+
+      <div class="board" role="img" aria-label="一张住宅平面图，旁边贴着三张业主的需求便签：主卧衣柜要装下四季被褥、厨房想要岛台、马桶总返味想移位">
+        <svg class="plan" viewBox="0 0 1080 420" fill="none" aria-hidden="true">
+          <rect width="1080" height="420" fill="#FFFFFF"/>
+          <g stroke="#16324A" stroke-width="2" fill="none">
+            <path d="M40 40h1000v340H40z"/>
+            <path d="M380 40v120M380 210v170M380 210h130"/>
+            <path d="M760 40v120M760 210v170M760 210h-130"/>
+            <path d="M40 220h130M240 220h140M240 260v120M240 260h-60"/>
+            <path d="M620 260h140M620 260v120"/>
+          </g>
+          <g stroke="#16324A" stroke-width="1" fill="none" stroke-opacity=".55">
+            <path d="M380 160a50 50 0 0 1-50 50M760 160a50 50 0 0 0-50 50M240 260a50 50 0 0 0 50-50M620 260a40 40 0 0 1 40 40"/>
+          </g>
+          <g font-family="-apple-system,'PingFang SC',sans-serif" font-size="13" fill="#16324A" fill-opacity=".8" letter-spacing=".08em">
+            <text x="120" y="140">主卧</text>
+            <text x="500" y="120">客厅</text>
+            <text x="880" y="120">阳台</text>
+            <text x="110" y="330">厨房</text>
+            <text x="390" y="330">餐厅</text>
+            <text x="660" y="330">玄关</text>
+            <text x="880" y="330">主卫</text>
+          </g>
+          <g font-family="-apple-system,'PingFang SC',sans-serif" font-size="13" fill="#16324A" fill-opacity=".75">
+            <text x="44" y="404">两室两厅 · 比例 1:100 · 示意</text>
+          </g>
+        </svg>
+        <div class="notes">
+          <div class="note"><b>主卧</b>朝南。衣柜必须装得下四季被褥 + 我的相机包，这个不能让。</div>
+          <div class="note alt"><b>厨房</b>想要岛台，一家三口够用就好，别学网红做大的。</div>
+          <div class="note"><b>主卫</b>马桶总返味，能不能趁机挪个位？</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="sec-head"><span class="no">01</span><h2 id="how-h">三步，把家说清楚</h2></div>
+      <div class="steps">
+        <div class="step"><span class="n">STEP 1</span><h3>说说你家</h3><p>像聊天一样回答问题：几口人住、作息习惯、哪里最不顺手。</p></div>
+        <div class="step"><span class="n">STEP 2</span><h3>发现冲突</h3><p>预算和想法打架、家庭成员意见不一致，住明白帮你提前看见。</p></div>
+        <div class="step"><span class="n">STEP 3</span><h3>带着清单见面</h3><p>生成一张家的需求说明，见设计师时直接从重点聊起。</p><span class="mini-note">家的需求说明 · 1 页</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="why" aria-labelledby="why-h">
+    <div class="wrap">
+      <div class="sec-head"><span class="no">02</span><h2 id="why-h">为什么是见面前</h2></div>
+      <div class="why-body">
+        <ul>
+          <li><i aria-hidden="true"></i><span><b>第一次见面最重要。</b>它决定了设计师怎么理解你的家，也决定了之后每一版方案往哪走。</span></li>
+          <li><i aria-hidden="true"></i><span>说得直白一点：<span class="lead">需求没理清时，节奏就在别人手里。</span></span></li>
+        </ul>
+        <div class="note"><b>一位业主的原话</b>「早知道当初把预算先谈开就好了。」——分歧早点看见，比晚点爆发好。</div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="ds-h">
+    <div class="wrap">
+      <div class="designer">
+        <h2 id="ds-h">如果你是设计师</h2>
+        <p>把它转发给你的客户：客户想得更清楚，见面就更高效，方案改得更少。</p>
+        <p class="quote">"见面前，先懂你家——这句话对你的客户同样成立。"</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" aria-labelledby="faq-h">
+    <div class="wrap faq">
+      <div class="sec-head"><span class="no">03</span><h2 id="faq-h">常见问题</h2></div>
+      <details>
+        <summary>我不会用专业词，能说明白吗？</summary>
+        <p>可以。全程像聊天，不需要懂"动线""承重墙"，住明白负责把你的话变成专业表述。</p>
+      </details>
+      <details>
+        <summary>会替我推荐设计师吗？</summary>
+        <p>不会。住明白只帮你梳理需求，让你和任何设计师见面时都更清楚、更平等。</p>
+      </details>
+      <details>
+        <summary>我的家庭信息安全吗？</summary>
+        <p>你的需求说明只属于你，是否分享、分享给谁，都由你决定。</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="final" aria-labelledby="final-h">
+    <div class="wrap">
+      <h2 id="final-h">家的事，值得先想清楚</h2>
+      <p>10 分钟，换来一次聊在点子上的见面。</p>
+      <a class="btn btn-primary" href="#">开始梳理我家</a>
+      <p class="micro">免费开始 · 约 10 分钟 · 不需要任何装修知识</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <nav aria-label="页脚导航">
+      <a href="#how">它怎么用</a>
+      <a href="#faq">常见问题</a>
+    </nav>
+    <span>© 2026 住明白</span>
+  </div>
+</footer>
+
+</body>
+</html>
