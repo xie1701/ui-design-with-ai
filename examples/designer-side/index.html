@@ -1,286 +1,394 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>住明白 · 见面前，先懂你家 — 设计师入口</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="住明白设计师入口：在见面前收到一份由业主自己整理的需求档案。">
+<title>住明白｜设计师收到的档案</title>
 <style>
 :root{
-  --ink:#16324A; --ink-soft:rgba(22,50,74,.85);
-  --paper:#F7F8F6; --card:#FFFFFF;
-  --kraft:#6F5730; --kraft-soft:#F3EDDF; --kraft-line:#D9CBAA;
-  --note:#FFE8A3; --note-line:#E8CE7A; --note-ink:#3A2E0C;
-  --accent:#D6482B; --accent-cta:#C0391D;
-  --line:#E3E6E2; --line-strong:#B8C2C9;
-  --r-card:12px; --r-note:2px;
-  --sec:clamp(48px,6vw,72px);
-  --font:-apple-system,'PingFang SC','Noto Sans SC',sans-serif;
+  --night:#211d2b;
+  --night-deep:#17131f;
+  --bone:#f0e9dc;
+  --bone-dim:#c9c0b2;
+  --paper:#f6f0e4;
+  --paper-shadow:#d9cfbd;
+  --green:#9db7a1;
+  --green-deep:#587361;
+  --yellow:#e9d8a5;
+  --red:#e16953;
+  --line:rgba(240,233,220,.25);
+  --dark-line:rgba(33,29,43,.22);
+  --serif:Baskerville,'Iowan Old Style','Songti SC','STSong',Georgia,serif;
+  --sans:'Avenir Next','PingFang SC','Noto Sans SC',-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:'Courier New',Courier,monospace;
+  --measure:1180px;
+  --ease:cubic-bezier(.22,.7,.25,1);
 }
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:var(--font);color:var(--ink);background:var(--paper);line-height:1.7;font-size:16px}
-.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:var(--night)}
+body{background:var(--night);color:var(--bone);font-family:var(--sans);font-size:16px;line-height:1.65;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.045;background-image:radial-gradient(rgba(255,255,255,.8) .5px,transparent .5px);background-size:5px 5px;z-index:20}
 a{color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-
-/* header */
-header{position:sticky;top:0;background:rgba(247,248,246,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);z-index:10}
-.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
-.brand{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;letter-spacing:.02em;white-space:nowrap}
-.brand .mark{width:22px;height:22px;border:1.5px solid var(--ink);border-radius:2px;position:relative;flex:none}
-.brand .mark::after{content:"";position:absolute;inset:4px 3px auto 3px;height:1.5px;background:var(--kraft)}
-.brand .text{font-size:15px}
-.brand .side{font-size:11px;color:var(--kraft);border:1px solid var(--kraft-line);border-radius:999px;padding:1px 8px;margin-left:2px}
-.nav-cta{background:var(--accent-cta);color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:8px 16px;border-radius:999px}
-@media (max-width:720px){.nav-cta{display:none}.brand .side{display:none}}
-@media (max-width:430px){.brand .side{display:none}.nav-cta{font-size:13px;padding:8px 12px}}
-
-/* hero */
-.hero{padding:clamp(40px,7vw,72px) 0 0}
-.hero .kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.14em;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:var(--card)}
-.hero h1{font-size:clamp(26px,5.4vw,44px);font-weight:600;line-height:1.25;margin:20px 0 14px;max-width:22em}
-.hero .sub{font-size:clamp(15px,2vw,18px);color:var(--ink-soft);max-width:32em;margin-bottom:28px}
-.cta-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
-.btn-primary{display:inline-flex;align-items:center;justify-content:center;background:var(--accent-cta);color:#fff;text-decoration:none;font-weight:600;padding:14px 28px;border-radius:999px;min-height:48px}
-.btn-ghost{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:var(--ink);text-decoration:none;font-weight:600;padding:14px 22px;border-radius:999px;min-height:48px;border:1px solid var(--line-strong)}
-.micro{font-size:13px;color:var(--ink-soft);margin-top:14px}
-.hero .board{margin-top:clamp(28px,4vw,44px);display:grid;grid-template-columns:1fr}
-@media (min-width:720px){.hero .board{grid-template-columns:1.2fr .8fr;gap:0;border:1px solid var(--line-strong);border-radius:var(--r-card);overflow:hidden;background:var(--card);box-shadow:4px 4px 0 rgba(22,50,74,.08)}}
-
-/* 档案卡 */
-.dossier{background:var(--card);border:1px solid var(--line-strong);border-radius:var(--r-card);overflow:hidden}
-@media (min-width:720px){.dossier{border:none;border-radius:0}}
-.dossier .tabs{display:flex;border-bottom:1px solid var(--line-strong);background:var(--kraft-soft)}
-.dossier .tab{flex:1;text-align:center;font-size:12.5px;font-weight:600;letter-spacing:.08em;color:var(--kraft);padding:10px 4px;border-right:1px dashed var(--kraft-line);cursor:pointer;background:none;border-top:none;border-bottom:none;border-left:none;font-family:var(--font)}
-.dossier .tab:last-child{border-right:none}
-.dossier .tab.on{background:var(--card);color:var(--ink);position:relative}
-.dossier .tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--accent)}
-.dossier .body{padding:20px 20px 18px;position:relative}
-.hole{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:var(--paper);border:1px solid var(--line-strong);transform:translateY(-50%)}
-.hole.l{left:8px}.hole.r{right:8px}
-@media (min-width:720px){.hole{display:none}}
-.dossier h3{font-size:15.5px;font-weight:600;margin:0 96px 12px 4px;white-space:nowrap}
-@media (min-width:720px){.dossier h3{font-size:17px}}
-.dossier dl{display:grid;grid-template-columns:5.2em 1fr;gap:8px 12px;font-size:14px}
-.dossier dt{color:var(--kraft);font-weight:600;white-space:nowrap}
-.dossier dd{color:var(--ink)}
-.stamp{position:absolute;top:14px;right:16px;transform:rotate(8deg);border:2.5px solid var(--accent-cta);color:var(--accent-cta);font-weight:700;font-size:13px;letter-spacing:.22em;padding:5px 10px;border-radius:4px;opacity:.85}
-.dossier .pane{display:none}.dossier .pane.on{display:block}
-.dossier .foot{border-top:1px dashed var(--kraft-line);padding:10px 20px;font-size:12px;color:var(--ink-soft);letter-spacing:.06em;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-@media (min-width:720px){.steps{position:relative}.step{position:relative}.step:not(:last-child)::after{content:"→";position:absolute;right:-11px;top:50%;transform:translateY(-50%);width:22px;height:22px;display:flex;align-items:center;justify-content:center;background:var(--paper);border:1px solid var(--line-strong);border-radius:50%;color:var(--kraft);font-weight:600;font-size:13px;z-index:1}}
-
-/* 业主便签回声 */
-.echo{background:var(--kraft-soft);border-top:1px dashed var(--kraft-line);padding:22px 20px;display:grid;gap:12px;align-content:start}
-@media (min-width:720px){.echo{border-top:none;border-left:1px dashed var(--kraft-line)}}
-.echo .who{font-size:12px;letter-spacing:.12em;color:var(--kraft);font-weight:600}
-.echo .note{background:var(--note);border:1px solid var(--note-line);border-radius:var(--r-note);box-shadow:3px 3px 0 rgba(22,50,74,.14);padding:12px 14px;font-size:13px;line-height:1.6;color:var(--note-ink)}
-.echo .note b{color:#2E240A}
-.echo .note:nth-child(odd){transform:rotate(-.9deg)}
-.echo .note:nth-child(even){transform:rotate(.8deg)}
-
-/* 三步 */
-.steps-sec{padding:var(--sec) 0}
-.sec-head{margin-bottom:28px}
-.sec-head .tag{font-size:13px;font-weight:600;letter-spacing:.14em;color:var(--kraft)}
-.sec-head h2{font-size:clamp(21px,3.6vw,30px);font-weight:600;margin-top:8px}
-.steps{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-card);overflow:visible}
-@media (min-width:720px){.steps{grid-template-columns:repeat(3,1fr)}}
-.step{background:var(--card);padding:26px 24px}
-.step .n{font-size:13px;color:var(--accent);font-weight:600;letter-spacing:.1em}
-.step h3{font-size:17px;margin:8px 0 6px;font-weight:600}
-.step p{font-size:14px;color:var(--ink-soft)}
-
-/* 深色区 */
-.why{background:var(--ink);color:#EAEFF4;padding:var(--sec) 0}
-.why .wrap{display:grid;gap:32px}
-@media (min-width:900px){.why .wrap{grid-template-columns:300px 1fr;gap:56px;align-items:start}}
-.why h2{font-size:clamp(21px,3.6vw,30px);font-weight:600;color:#fff;line-height:1.35}
-.why h2 .hm{color:#FFC9A8}
-.why ul{list-style:none;display:grid;gap:20px;max-width:36em}
-.why li{font-size:15px;color:rgba(234,240,244,.9);display:flex;gap:14px}
-.why li i{flex:none;width:10px;height:10px;margin-top:9px;background:#FF9C82;border-radius:1px}
-.why li b{color:#fff;font-weight:600}
-.why li .lead{color:#fff;font-weight:600}
-
+button{font:inherit}
+:focus-visible{outline:2px solid var(--yellow);outline-offset:5px}
+.wrap{width:min(var(--measure),calc(100% - 48px));margin-inline:auto}
+.skip{position:absolute;left:18px;top:-100px;background:var(--yellow);color:var(--night);padding:8px 12px;z-index:100;text-decoration:none;font-weight:700}
+.skip:focus{top:16px}
+/* 顶部铭牌 */
+.site-head{border-bottom:1px solid var(--line);position:relative;z-index:5}
+.site-head .wrap{display:flex;align-items:center;justify-content:space-between;min-height:76px;gap:20px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;letter-spacing:.1em;font-weight:700;font-size:14px}
+.brand-mark{width:20px;height:25px;border:1px solid var(--green);display:grid;place-items:center;color:var(--green);font-family:var(--serif);font-size:14px}
+.brand-sub{font-family:var(--mono);font-size:10px;color:var(--bone-dim);letter-spacing:.08em}
+.header-note{font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:.08em;text-align:right}
+/* 浮动索引 */
+.index-rail{position:fixed;left:22px;top:50%;transform:translateY(-50%);z-index:10;width:104px}
+.index-rail p{font-family:var(--mono);font-size:9px;color:var(--bone-dim);letter-spacing:.12em;margin-bottom:14px;transform:rotate(-90deg) translateX(-24px);transform-origin:left top;width:100px}
+.index-rail ol{list-style:none;border-left:1px solid var(--line)}
+.index-rail li{margin:0}
+.index-rail a{display:block;padding:7px 0 7px 13px;color:var(--bone-dim);text-decoration:none;font-family:var(--mono);font-size:10px;letter-spacing:.08em;transition:color .2s ease,border-color .2s ease}
+.index-rail a:hover,.index-rail a:focus-visible{color:var(--yellow)}
+.index-rail a span{color:var(--green);margin-right:4px}
+/* 首屏 */
+.hero{min-height:calc(100svh - 77px);padding:clamp(42px,7vw,92px) 0 104px;position:relative}
+.hero-grid{display:grid;grid-template-columns:minmax(280px,.72fr) minmax(500px,1.28fr);gap:clamp(40px,7vw,112px);align-items:center}
+.hero-copy{position:relative;padding-left:clamp(0px,3vw,42px)}
+.hero-copy:before{content:"";position:absolute;left:0;top:-26px;width:42px;height:1px;background:var(--red)}
+.kicker,.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--green);text-transform:uppercase}
+.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(46px,7vw,92px);line-height:.98;letter-spacing:-.055em;margin:23px 0 26px;max-width:6em}
+.hero-lead{font-size:clamp(16px,1.6vw,19px);color:var(--bone);max-width:25em;line-height:1.75}
+.hero-lead em{font-family:var(--serif);font-style:normal;color:var(--yellow)}
+.hero-actions{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-top:34px}
+.button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:11px 18px;border:1px solid var(--green);color:var(--night);background:var(--green);text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:background .2s ease,color .2s ease,transform .2s ease}
+.button:hover,.button:focus-visible{background:var(--yellow);border-color:var(--yellow);transform:translateY(-2px)}
+.button.secondary{color:var(--bone);background:transparent;border-color:var(--line)}
+.button.secondary:hover,.button.secondary:focus-visible{color:var(--night);border-color:var(--yellow)}
+.hero-foot{font-family:var(--mono);font-size:10px;color:var(--bone-dim);margin-top:19px;letter-spacing:.05em}
+.hero-foot:before{content:"↳ ";color:var(--red)}
+.hero-number{position:absolute;left:-.1em;bottom:-.28em;font-family:var(--serif);font-size:clamp(170px,22vw,330px);line-height:.7;color:rgba(157,183,161,.075);pointer-events:none;z-index:-1}
+/* 档案台：桌面错位的纸张层 */
+.archive-stage{position:relative;min-height:610px;perspective:1100px;padding:30px 0 20px 16px}
+.archive-stage:before{content:"ARCHIVE ROOM / 01";position:absolute;right:0;top:0;font-family:var(--mono);font-size:10px;color:var(--bone-dim);letter-spacing:.12em}
+.paper{border:1px solid var(--dark-line);color:var(--night);background:var(--paper);box-shadow:12px 15px 0 rgba(0,0,0,.28);position:absolute;transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.paper-back{width:78%;height:455px;right:0;top:67px;background:var(--yellow);transform:rotate(5.5deg) translateZ(-80px);padding:27px 25px;color:#5b4f31}
+.paper-back.two{width:86%;height:505px;right:8%;top:40px;background:var(--green);transform:rotate(-3.5deg) translateZ(-35px);padding:31px 28px;color:#253a2c}
+.paper-back .paper-caption{font-family:var(--mono);font-size:10px;letter-spacing:.12em;border-bottom:1px solid currentColor;padding-bottom:12px}
+.paper-back .ghost-lines{margin-top:34px;display:grid;gap:16px;opacity:.52}
+.ghost-lines i{display:block;height:1px;background:currentColor;width:78%}
+.ghost-lines i:nth-child(2){width:54%}.ghost-lines i:nth-child(3){width:88%}.ghost-lines i:nth-child(4){width:44%}
+.archive-main{width:min(100%,545px);min-height:575px;left:0;top:25px;z-index:2;transform:rotate(-1.8deg) translateZ(0);padding:0;display:flex;flex-direction:column}
+.archive-main:hover{transform:rotate(-1.8deg) translateY(-7px) translateZ(20px);box-shadow:16px 22px 0 rgba(0,0,0,.3)}
+.archive-top{padding:22px 25px 18px;border-bottom:1px solid var(--dark-line);display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+.archive-top .eyebrow{color:var(--green-deep);font-size:9px}
+.archive-id{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--green-deep);white-space:nowrap}
+.archive-title{padding:21px 25px 17px;position:relative}
+.archive-title h2{font-family:var(--serif);font-size:clamp(26px,3vw,35px);font-weight:400;line-height:1.12;letter-spacing:-.035em;max-width:9em}
+.archive-title p{font-family:var(--mono);font-size:9px;color:#746d62;letter-spacing:.08em;margin-top:10px}
+.proof-stamp{position:absolute;right:23px;top:27px;color:var(--red);border:2px solid var(--red);background:transparent;padding:5px 8px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;transform:rotate(7deg);cursor:pointer;transition:background .2s ease,color .2s ease,transform .2s ease}
+.proof-stamp:hover,.proof-stamp:focus-visible{background:var(--red);color:var(--paper);transform:rotate(2deg) scale(1.03)}
+.proof-stamp.is-received{background:var(--red);color:var(--paper);transform:rotate(-2deg)}
+.tab-list{display:flex;border-top:1px solid var(--dark-line);border-bottom:1px solid var(--dark-line);padding:0 14px;background:#e9e0d2}
+.tab{appearance:none;border:0;border-right:1px dashed var(--dark-line);background:transparent;color:#6d665e;cursor:pointer;flex:1;padding:11px 7px 10px;font-size:12px;letter-spacing:.02em;position:relative;text-align:center;white-space:nowrap}
+.tab:first-child{border-left:1px dashed var(--dark-line)}
+.tab:hover{color:var(--night);background:rgba(255,255,255,.38)}
+.tab[aria-selected=true]{color:var(--night);font-weight:700;background:var(--paper)}
+.tab[aria-selected=true]:after{content:"";position:absolute;left:9px;right:9px;bottom:-1px;height:3px;background:var(--red)}
+.archive-content{padding:22px 25px 18px;flex:1}
+.pane h3{font-family:var(--serif);font-size:20px;font-weight:400;line-height:1.2;margin-bottom:16px}
+.fact-list{display:grid;grid-template-columns:4.5em 1fr;gap:11px 13px;font-size:13px;line-height:1.6}
+.fact-list dt{color:var(--green-deep);font-weight:700;white-space:nowrap}
+.fact-list dd{margin:0}
+.margin-note{border-left:2px solid var(--red);padding:8px 0 8px 13px;margin-top:22px;font-size:12px;line-height:1.55;color:#6d514a}
+.margin-note strong{color:var(--red);font-family:var(--mono);font-size:9px;letter-spacing:.08em;display:block;margin-bottom:4px}
+.archive-footer{border-top:1px dashed var(--dark-line);padding:10px 25px 13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#7a7267;font-family:var(--mono);font-size:9px;letter-spacing:.04em}
+.received-status{color:var(--red);min-height:1.4em}
+/* 说明区：不是三张卡，而是一张档案登记页 */
+.section{padding:clamp(80px,11vw,145px) 0}
+.section-rule{border-top:1px solid var(--line)}
+.section-heading{display:flex;gap:28px;align-items:baseline;margin-bottom:48px}
+.section-no{font-family:var(--serif);font-size:clamp(56px,8vw,100px);font-weight:400;line-height:.8;color:var(--green)}
+.section-heading .eyebrow{color:var(--bone-dim)}
+.section-heading h2{font-family:var(--serif);font-size:clamp(29px,4.8vw,56px);font-weight:400;line-height:1.08;letter-spacing:-.04em}
+.arrival-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:clamp(40px,9vw,130px);align-items:start}
+.arrival-intro{font-family:var(--serif);font-size:clamp(22px,3vw,36px);line-height:1.3;max-width:15em}
+.arrival-intro em{font-style:normal;color:var(--yellow)}
+.ledger{border-top:1px solid var(--line)}
+.ledger-row{display:grid;grid-template-columns:52px 1fr;gap:15px;padding:22px 0;border-bottom:1px solid var(--line)}
+.ledger-row .row-no{font-family:var(--mono);font-size:11px;color:var(--red);padding-top:4px}
+.ledger-row h3{font-family:var(--serif);font-size:22px;font-weight:400;margin-bottom:4px}
+.ledger-row p{font-size:14px;color:var(--bone-dim);max-width:32em}
+/* 价值区 */
+.useful{background:var(--bone);color:var(--night);position:relative}
+.useful .section-rule{border-color:var(--dark-line)}
+.useful .section-no{color:var(--green-deep)}
+.useful .section-heading .eyebrow{color:#70685e}
+.useful-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(45px,9vw,140px);align-items:start}
+.useful-quote{font-family:var(--serif);font-size:clamp(29px,4vw,52px);line-height:1.12;letter-spacing:-.04em;max-width:8em}
+.useful-quote mark{background:var(--yellow);color:inherit;padding:0 .08em}
+.useful-list{border-top:1px solid var(--dark-line)}
+.useful-list li{list-style:none;display:grid;grid-template-columns:115px 1fr;gap:18px;padding:20px 0;border-bottom:1px solid var(--dark-line)}
+.useful-list strong{font-family:var(--mono);font-size:11px;color:var(--green-deep);letter-spacing:.05em;padding-top:4px}
+.useful-list p{font-size:15px;line-height:1.7;max-width:34em}
+.useful-list b{font-weight:700}
 /* FAQ */
-.faq-sec{padding:var(--sec) 0}
-.faq-sec .sec-head{margin-bottom:20px}
-details{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:16px 20px;margin-bottom:12px}
-summary{cursor:pointer;font-weight:600;font-size:15.5px;list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.faq-grid{display:grid;grid-template-columns:.72fr 1.28fr;gap:clamp(40px,9vw,130px);align-items:start}
+.faq-intro p{font-family:var(--serif);font-size:clamp(25px,3.3vw,40px);line-height:1.2;max-width:9em}
+.faq-list{border-top:1px solid var(--line)}
+details{border-bottom:1px solid var(--line);padding:0}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:20px;align-items:center;padding:21px 0;font-family:var(--serif);font-size:20px;color:var(--bone)}
 summary::-webkit-details-marker{display:none}
-summary::after{content:"+";font-size:20px;color:var(--kraft);line-height:1;transition:transform .2s}
-details[open] summary::after{transform:rotate(45deg)}
-details p{padding-top:10px;font-size:15px;color:var(--ink-soft)}
-
-/* final + footer */
-.final{background:var(--kraft-soft);border-top:1px solid var(--kraft-line);padding:var(--sec) 0;text-align:center}
-.final h2{font-size:clamp(22px,4vw,32px);font-weight:600;margin-bottom:10px}
-.final p{color:var(--ink-soft);margin-bottom:12px}
-.final .cta-row{justify-content:center;margin-top:22px}
-footer{border-top:1px solid var(--line);padding:26px 0 34px;font-size:13px;color:var(--ink-soft)}
-footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between}
-footer nav{display:flex;gap:20px}
-footer a{text-decoration:none}
-footer a:hover{color:var(--ink)}
-
-@media (prefers-reduced-motion:no-preference){
- .dossier{opacity:0;animation:open .5s ease-out forwards}
- .echo .note{opacity:0;animation:stick .45s ease-out forwards}
- .echo .note:nth-child(2){animation-delay:.12s}.echo .note:nth-child(3){animation-delay:.26s}
- @keyframes open{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
- @keyframes stick{from{opacity:0;transform:translateY(8px) rotate(-2deg)}to{opacity:1}}
- .echo .note:nth-child(even){animation-name:stick-r}
- @keyframes stick-r{from{opacity:0;transform:translateY(8px) rotate(2deg)}to{opacity:1}}
+summary:after{content:"+";font-family:var(--mono);font-size:18px;color:var(--green);flex:none;transition:transform .2s ease}
+details[open] summary:after{transform:rotate(45deg);color:var(--red)}
+details p{color:var(--bone-dim);font-size:14px;line-height:1.75;padding:0 42px 22px 0;max-width:48em}
+/* 收束 */
+.final{background:var(--yellow);color:var(--night);padding:clamp(76px,10vw,130px) 0;position:relative;overflow:hidden}
+.final .button{display:inline-flex;align-items:center;gap:14px;background:transparent;color:var(--night);border:1px solid rgba(33,29,43,.48);padding:14px 16px;text-decoration:none;font-family:var(--mono);font-size:11px;letter-spacing:.08em;transform:rotate(-2deg);box-shadow:5px 5px 0 rgba(33,29,43,.16);transition:transform .2s var(--ease),background .2s var(--ease)}
+.final .button:hover{background:var(--paper);transform:rotate(0) translateY(-3px)}
+.final:after{content:"RECEIVED / JM";position:absolute;right:3vw;bottom:16px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:rgba(33,29,43,.48);transform:rotate(-7deg)}
+.final-inner{display:flex;justify-content:space-between;gap:40px;align-items:end}
+.final h2{font-family:var(--serif);font-size:clamp(38px,6vw,74px);font-weight:400;line-height:1;letter-spacing:-.055em;max-width:8em}
+.final p{max-width:27em;margin-top:17px;font-size:15px}
+.final .button{color:var(--bone);background:var(--night);border-color:var(--night);white-space:nowrap}
+.final .button:hover,.final .button:focus-visible{color:var(--night);background:var(--green);border-color:var(--green)}
+.site-foot{border-top:1px solid var(--line);padding:23px 0 30px;color:var(--bone-dim);font-family:var(--mono);font-size:10px;letter-spacing:.04em}
+.site-foot .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+/* 桌面到移动的收束 */
+@media (max-width:1180px){.index-rail{left:10px}.wrap{width:min(var(--measure),calc(100% - 76px))}}
+@media (max-width:820px){
+  .index-rail{display:none}
+  .wrap{width:min(var(--measure),calc(100% - 36px))}
+  .hero-grid,.arrival-grid,.useful-grid,.faq-grid{grid-template-columns:1fr}
+  .hero{padding-top:54px}
+  .hero-copy{padding-left:0}
+  .hero-copy:before{left:auto;right:0;top:-22px}
+  .hero h1{max-width:7em}
+  .archive-stage{min-height:0;padding:44px 0 0}
+  .archive-stage:before{right:auto;left:0;top:8px}
+  .paper-back{display:none}
+  .archive-main{position:relative;left:auto;top:auto;width:100%;min-height:0;transform:none!important}
+  .archive-main:hover{transform:translateY(-3px)!important}
+  .archive-title h2{max-width:8em}
+  .arrival-grid,.useful-grid,.faq-grid{gap:42px}
+  .final-inner{display:block}
+  .final .button{margin-top:29px}
 }
+@media (max-width:520px){
+  .wrap{width:calc(100% - 36px)}
+  .site-head .wrap{min-height:64px}
+  .header-note{font-size:9px}
+  .brand-sub{display:none}
+  .hero{padding-bottom:76px}
+  .hero h1{font-size:clamp(44px,15vw,65px);margin-top:18px}
+  .hero-actions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:27px}
+  .button{width:100%}
+  .archive-stage{padding-top:42px}
+  .archive-main{box-shadow:7px 10px 0 rgba(0,0,0,.25)}
+  .archive-top{padding:18px 17px 14px}
+  .archive-title{padding:18px 17px 14px}
+  .archive-title h2{font-size:27px}
+  .proof-stamp{right:15px;top:22px;font-size:9px}
+  .tab-list{padding:0 7px}
+  .tab{font-size:11px;padding:11px 3px}
+  .archive-content{padding:19px 17px 16px}
+  .archive-footer{padding-inline:17px;font-size:8px}
+  .fact-list{grid-template-columns:4.2em 1fr;gap:9px 9px;font-size:12px}
+  .section{padding:76px 0}
+  .section-heading{gap:17px;margin-bottom:34px}
+  .section-no{font-size:63px}
+  .section-heading h2{font-size:31px}
+  .arrival-intro{font-size:27px}
+  .useful-list li{grid-template-columns:1fr;gap:3px}
+  .useful-list strong{padding-top:0}
+  summary{font-size:18px;padding:18px 0}
+  .final h2{font-size:47px}
+  .final:after{font-size:8px;right:17px}
+}
+@media (max-width:340px){
+  .wrap{width:calc(100% - 28px)}
+  .header-note{display:none}
+  .archive-title h2{font-size:25px}
+  .tab{font-size:10px}
+  .fact-list{grid-template-columns:3.9em 1fr;font-size:11.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .paper,.archive-main,.button{transition:none}
+}
+.archive-reading{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:clamp(28px,6vw,80px);align-items:start;max-width:1020px}
+.reading-sheet{background:var(--paper);color:var(--night);border:1px solid var(--dark-line);padding:clamp(25px,4vw,52px);transform:rotate(-1.1deg);box-shadow:14px 18px 0 var(--paper-shadow)}
+.reading-head{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid var(--dark-line);padding-bottom:13px;font:10px var(--mono);letter-spacing:.1em;color:#746d62}
+.reading-lede{font:400 clamp(28px,4vw,54px)/1.08 var(--serif);letter-spacing:-.045em;max-width:11em;margin:35px 0 45px}
+.reading-lede mark{background:linear-gradient(transparent 62%,var(--yellow) 62%);color:inherit}
+.margin-index{list-style:none;border-top:1px solid var(--dark-line)}
+.margin-index li{display:grid;grid-template-columns:58px 1fr;gap:18px;padding:19px 0;border-bottom:1px solid var(--dark-line)}
+.margin-index li>span{font:11px var(--mono);color:var(--red);padding-top:4px}
+.margin-index strong{display:block;font:400 23px/1.15 var(--serif);margin-bottom:5px}
+.margin-index p{font-size:14px;color:#625b53;max-width:34em}
+.reading-note{background:var(--yellow);color:var(--night);padding:20px 18px;transform:rotate(3.5deg);margin-top:82px;box-shadow:5px 6px 0 rgba(0,0,0,.18)}
+.reading-note strong{display:block;font:11px var(--mono);letter-spacing:.1em;margin-bottom:15px;color:var(--red)}
+.reading-note p{font:400 24px/1.2 var(--serif)}
+@media (max-width:820px){.archive-reading{grid-template-columns:1fr;gap:28px}.reading-note{margin:0 18px 0 auto;max-width:240px}.reading-sheet{transform:none}.reading-lede{margin:25px 0 32px}}
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap nav">
-    <a class="brand" href="#"><span class="mark" aria-hidden="true"></span><span class="text">住明白</span><span class="side">设计师入口</span></a>
-    <a class="nav-cta" href="#demo">看示例档案</a>
+<a class="skip" href="#main">跳到主要内容</a>
+<header class="site-head">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="住明白，回到页面顶部"><span class="brand-mark" aria-hidden="true">住</span><span>住明白</span><span class="brand-sub">DESIGNER FILES</span></a>
+    <p class="header-note">BEFORE THE MEETING / DESIGNER ENTRY</p>
   </div>
 </header>
-
-<main>
-<section class="hero" aria-labelledby="h-hero">
-  <div class="wrap">
-    <span class="kicker">见面前 · 设计师入口</span>
-    <h1 id="h-hero">见面之前，<br>先收到一份整理好的需求档案</h1>
-    <p class="sub">业主用住明白把家里情况、预算边界和家人的分歧梳理成一页档案，发给你。你不用再从零猜需求——见面直接谈方案。</p>
-    <div class="cta-row">
-      <a class="btn-primary" href="#demo">看示例档案</a>
-      <a class="btn-ghost" href="#receive">了解怎么收到</a>
-    </div>
-    <p class="micro">对设计师免费 · 档案由业主自己填写整理</p>
-
-    <div class="board" id="demo">
-      <div class="dossier" role="group" aria-label="一份业主需求档案示例，含基本情况、预算边界、家人分歧三个标签页，盖着「见面前」红章">
-        <div class="tabs" role="tablist" aria-label="档案标签页">
-          <button class="tab on" role="tab" aria-selected="true" data-pane="p1">基本情况</button><button class="tab" role="tab" aria-selected="false" data-pane="p2">预算边界</button><button class="tab" role="tab" aria-selected="false" data-pane="p3">家人分歧</button>
+<nav class="index-rail" aria-label="页面索引">
+  <p>INDEX / FILE ROOM</p>
+  <ol>
+    <li><a href="#demo"><span>01</span>档案</a></li>
+    <li><a href="#arrival"><span>02</span>抵达</a></li>
+    <li><a href="#useful"><span>03</span>用处</a></li>
+    <li><a href="#faq"><span>04</span>答疑</a></li>
+  </ol>
+</nav>
+<main id="main">
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="kicker">DESIGNER / RECEIVED MATERIAL</span>
+        <h1 id="hero-title">先读一页，<br>再见面。</h1>
+        <p class="hero-lead">见面前，你会收到一份<em>业主自己整理的需求档案</em>：谁住、怎么生活、预算到哪条线、家人卡在哪里。</p>
+        <div class="hero-actions">
+          <a class="button" href="#demo">翻开示例档案 <span aria-hidden="true">↘</span></a>
+          <a class="button secondary" href="#arrival">了解怎么收到</a>
         </div>
-        <div class="body">
-          <span class="hole l" aria-hidden="true"></span><span class="hole r" aria-hidden="true"></span>
-          <span class="stamp" aria-hidden="true">见面前</span>
-          <div class="pane on" id="p1">
-            <h3>王先生家 · 两室两厅 · 92㎡</h3>
-            <dl>
-              <dt>常住</dt><dd>夫妻二人 + 上小学的孩子，老人寒暑假来住</dd>
-              <dt>作息</dt><dd>孩子 21:30 睡，主卧在客厅正上方</dd>
-              <dt>最不顺手</dt><dd>厨房操作台只有 1.2 米，两个人转不开</dd>
-              <dt>已有想法</dt><dd>想要中岛，但不确定 92㎡ 放不放得下</dd>
-            </dl>
+        <p class="hero-foot">读完约三分钟 · 档案由业主填写整理</p>
+        <span class="hero-number" aria-hidden="true">01</span>
+      </div>
+      <div class="archive-stage" id="demo" aria-label="一份业主需求档案示例">
+        <div class="paper paper-back" aria-hidden="true"><p class="paper-caption">FIELD NOTES / PRIVATE HOME</p><div class="ghost-lines"><i></i><i></i><i></i><i></i></div></div>
+        <div class="paper paper-back two" aria-hidden="true"><p class="paper-caption">ROOM / 92 SQM / 2026</p><div class="ghost-lines"><i></i><i></i><i></i><i></i></div></div>
+        <article class="paper archive-main">
+          <div class="archive-top"><div><span class="eyebrow">OWNER-PREPARED BRIEF</span><p class="archive-id">JM / 0920 / 01</p></div><span class="archive-id">档案 01</span></div>
+          <div class="archive-title">
+            <h2>王先生家<br>两室两厅 · 92㎡</h2>
+            <p>一份在见面前抵达的生活切片</p>
+            <button class="proof-stamp" id="proofButton" type="button" aria-pressed="false">校样批注</button>
           </div>
-          <div class="pane" id="p2">
-            <h3>预算边界 · 业主自己划的线</h3>
-            <dl>
-              <dt>总预算</dt><dd>硬装+主材 30 万以内</dd>
-              <dt>可以多花</dt><dd>厨房和卫生间的五金，愿意用好料</dd>
-              <dt>不想花</dt><dd>造型吊顶、背景墙这类纯装饰</dd>
-              <dt>超支底线</dt><dd>「超过 33 万我宁愿先不做」</dd>
-            </dl>
+          <div class="tab-list" role="tablist" aria-label="档案内容分类">
+            <button class="tab" id="tab-p1" type="button" role="tab" aria-selected="true" aria-controls="p1" tabindex="0" data-pane="p1">基本情况</button>
+            <button class="tab" id="tab-p2" type="button" role="tab" aria-selected="false" aria-controls="p2" tabindex="-1" data-pane="p2">预算边界</button>
+            <button class="tab" id="tab-p3" type="button" role="tab" aria-selected="false" aria-controls="p3" tabindex="-1" data-pane="p3">家人分歧</button>
           </div>
-          <div class="pane" id="p3">
-            <h3>家人分歧 · 还没吵完的账</h3>
-            <dl>
-              <dt>中岛台</dt><dd>妻子想要，先生怕挡路，等你专业判断</dd>
-              <dt>地板</dt><dd>先生要木地板，妻子怕难打理</dd>
-              <dt>孩子房</dt><dd>想一步到位又怕孩子长大不够用</dd>
-            </dl>
+          <div class="archive-content">
+            <section class="pane" id="p1" role="tabpanel" aria-labelledby="tab-p1">
+              <h3>先把住在这里的人说清楚</h3>
+              <dl class="fact-list"><dt>常住</dt><dd>夫妻二人 + 上小学的孩子，老人寒暑假来住</dd><dt>作息</dt><dd>孩子 21:30 睡，主卧在客厅正上方</dd><dt>最不顺手</dt><dd>厨房操作台只有 1.2 米，两个人转不开</dd><dt>已有想法</dt><dd>想要中岛，但不确定 92㎡ 放不放得下</dd></dl>
+              <aside class="margin-note"><strong>校样批注 / 读到这里</strong>见面时可以先从厨房的两人动线聊起。</aside>
+            </section>
+            <section class="pane" id="p2" role="tabpanel" aria-labelledby="tab-p2" hidden>
+              <h3>业主自己划出的预算线</h3>
+              <dl class="fact-list"><dt>总预算</dt><dd>硬装 + 主材 30 万以内</dd><dt>可以多花</dt><dd>厨房和卫生间的五金，愿意用好料</dd><dt>不想花</dt><dd>造型吊顶、背景墙这类纯装饰</dd><dt>超支底线</dt><dd>“超过 33 万我宁愿先不做”</dd></dl>
+              <aside class="margin-note"><strong>校样批注 / 边界清楚</strong>把可调整和不想花的部分分开看。</aside>
+            </section>
+            <section class="pane" id="p3" role="tabpanel" aria-labelledby="tab-p3" hidden>
+              <h3>还没吵完、但值得一起判断的事</h3>
+              <dl class="fact-list"><dt>中岛台</dt><dd>妻子想要，先生怕挡路，等你专业判断</dd><dt>地板</dt><dd>先生要木地板，妻子怕难打理</dd><dt>孩子房</dt><dd>想一步到位，又怕孩子长大不够用</dd></dl>
+              <aside class="margin-note"><strong>校样批注 / 保留分歧</strong>分歧不是结论，是见面时要共同面对的背景。</aside>
+            </section>
           </div>
+          <div class="archive-footer"><span>业主自填 · 共 1 页</span><span class="received-status" id="receivedStatus" aria-live="polite">待设计师批注</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-rule" id="arrival" aria-labelledby="arrival-title">
+    <div class="wrap">
+      <div class="section-heading"><span class="section-no" aria-hidden="true">02</span><div><span class="eyebrow">HOW IT ARRIVES</span><h2 id="arrival-title">档案怎么抵达你手上</h2></div></div>
+      <div class="arrival-grid">
+        <p class="arrival-intro">不是再填一张表。是业主先把自己的生活整理一遍，再把这份<em>可读的背景</em>发给你。</p>
+        <div class="ledger" aria-label="档案抵达流程">
+          <div class="ledger-row"><span class="row-no">01</span><div><h3>业主整理</h3><p>业主按住明白的引导写下居住成员、作息、预算边界和暂未解决的分歧。</p></div></div>
+          <div class="ledger-row"><span class="row-no">02</span><div><h3>链接发来</h3><p>见面前，业主把档案链接发给你。点开就能读，不需要安装额外工具。</p></div></div>
+          <div class="ledger-row"><span class="row-no">03</span><div><h3>带着问题见面</h3><p>你先知道该问什么，见面时把时间留给空间判断、方案讨论和现场经验。</p></div></div>
         </div>
-        <div class="foot"><span>档案编号 JM-0920 · 业主自填</span><span>共 1 页 · 标签可点击</span></div>
-      </div>
-      <div class="echo">
-        <span class="who">业主在档案里留下的话</span>
-        <div class="note">「厨房是最头疼的，<b>两个人同时用就打架</b>。」</div>
-        <div class="note">「预算最多到 30 万，<b>超了我宁愿先不做</b>。」</div>
-        <div class="note">「我老婆想要中岛，我怕挡路，<b>你们专业上看</b>。」</div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="steps-sec" aria-labelledby="h-steps">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="tag">怎么收到 · 三步</span>
-      <h2 id="h-steps">三步，收到一份能读的档案</h2>
+  <section class="section useful" id="useful" aria-labelledby="useful-title">
+    <div class="wrap">
+      <div class="section-heading"><span class="section-no" aria-hidden="true">03</span><div><span class="eyebrow">WHY KEEP IT</span><h2 id="useful-title">一页档案，替你省掉哪些猜测</h2></div></div>
+      <div class="archive-reading">
+        <article class="reading-sheet">
+          <div class="reading-head"><span>FILE 03 / WHAT YOU CAN KNOW</span><span>JM / 0920 / 01</span></div>
+          <p class="reading-lede">少猜一点，见面就能<mark>多了解一点。</mark></p>
+          <ol class="margin-index">
+            <li><span>01</span><div><strong>少猜 / LESS GUESS</strong><p><b>预算边界写在明面上。</b>知道哪些地方可以讨论，哪些线暂时不碰。</p></div></li>
+            <li><span>02</span><div><strong>省时间 / SAVE TIME</strong><p><b>基本情况不用从零问。</b>把背景询问换成有上下文的方案交流。</p></div></li>
+            <li><span>03</span><div><strong>多了解 / READ MORE</strong><p><b>看见生活里的具体动作。</b>知道两个人为什么会在厨房转不开。</p></div></li>
+          </ol>
+        </article>
+        <aside class="reading-note"><strong>页边批注 / KEEP THIS</strong><p>这不是答案，是你们见面时更好的底稿。</p></aside>
+      </div>
     </div>
-    <div class="steps">
-      <div class="step"><span class="n">STEP 1</span><h3>业主发给你</h3><p>业主在微信里把档案链接发给你，见面前就到，不用装任何东西。</p></div>
-      <div class="step"><span class="n">STEP 2</span><h3>见面前读完</h3><p>一页纸三分钟读完：谁住、作息、预算边界、家人分歧，都写在明面上。</p></div>
-      <div class="step"><span class="n">STEP 3</span><h3>见面谈方案</h3><p>不用再花半小时问基本情况，把时间留给真正需要你专业判断的部分。</p></div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<section class="why" aria-labelledby="h-why">
-  <div class="wrap">
-    <h2 id="h-why">为什么设计师<span class="hm">值得花三分钟</span>读这份档案</h2>
-    <ul>
-      <li><i aria-hidden="true"></i><span><b class="lead">少猜。</b>预算边界和家人的分歧摆在明面上，不用在试探里打转。</span></li>
-      <li><i aria-hidden="true"></i><span><b class="lead">省时间。</b>基本情况业主自己写好了，见面的时间留给方案本身。</span></li>
-      <li><i aria-hidden="true"></i><span><b class="lead">多了解。</b>业主也在读你的档案——彼此多了解一点，见面就更有效一点。</span></li>
-    </ul>
-  </div>
-</section>
-
-<section class="faq-sec" id="faq" aria-labelledby="h-faq">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="tag">答疑</span>
-      <h2 id="h-faq">常见问题</h2>
+  <section class="section section-rule" id="faq" aria-labelledby="faq-title">
+    <div class="wrap">
+      <div class="section-heading"><span class="section-no" aria-hidden="true">04</span><div><span class="eyebrow">QUESTIONS / NOTES</span><h2 id="faq-title">常见问题</h2></div></div>
+      <div class="faq-grid">
+        <div class="faq-intro"><p>档案不是答案，是见面前一张更好的<em>底稿</em>。</p></div>
+        <div class="faq-list">
+          <details><summary>档案内容是谁写的？</summary><p>由业主按引导自己填写。住明白负责把内容整理成好读的结构，不代写，也不替业主美化。仍然存疑的地方，可以留到见面时一起确认。</p></details>
+          <details><summary>我需要注册或安装什么吗？</summary><p>不需要。业主把链接发来后，直接打开即可阅读；你可以先看档案，再决定见面时从哪里开始聊。</p></details>
+          <details><summary>设计师使用档案需要付费吗？</summary><p>设计师查看档案免费。住明白向业主收取档案整理服务费，与设计师无关。</p></details>
+        </div>
+      </div>
     </div>
-    <details>
-      <summary>档案内容可信吗？都是业主自己填的？</summary>
-      <p>是业主按引导自己填写的，住明白只帮梳理结构、提示遗漏，不代写也不美化。有存疑的地方，正好是见面时值得聊的点。</p>
-    </details>
-    <details>
-      <summary>我要付出什么？会占用很多时间吗？</summary>
-      <p>读一份档案大约三分钟。不需要注册、不需要装东西，微信里点开链接就能看。</p>
-    </details>
-    <details>
-      <summary>对设计师收费吗？</summary>
-      <p>设计师侧免费。住明白向业主收取档案整理的服务费，与设计师无关。</p>
-    </details>
-  </div>
-</section>
+  </section>
 
-<section class="final" id="receive" aria-labelledby="h-final">
-  <div class="wrap">
-    <h2 id="h-final">下一份档案，来自你的下一位业主</h2>
-    <p>见面前，先懂你家。</p>
-    <p class="micro">对设计师免费 · 不需要注册</p>
-    <div class="cta-row">
-      <a class="btn-primary" href="#demo">看示例档案</a>
-      <a class="btn-ghost" href="#receive">了解怎么收到</a>
+  <section class="final" id="receive" aria-labelledby="final-title">
+    <div class="wrap final-inner">
+      <div><h2 id="final-title">下一次见面，先收到一点背景。</h2><p>如果业主把住明白档案发给你，打开链接，就能在见面前先读懂这家人的生活和边界。</p></div>
+      <a class="button" href="#demo"><span>ATTACHMENT / 示例档案</span><span aria-hidden="true">↗</span></a>
     </div>
-  </div>
-</section>
+  </section>
 </main>
-
-<footer>
-  <div class="wrap">
-    <span>© 2026 住明白 · 设计师入口</span>
-  </div>
-</footer>
+<footer class="site-foot"><div class="wrap"><span>© 2026 住明白 · 设计师入口</span><span>ARCHIVE ROOM / END OF FILE</span></div></footer>
 <script>
 (function(){
-  var tabs=[].slice.call(document.querySelectorAll('.dossier .tab'));
-  var panes={p1:document.getElementById('p1'),p2:document.getElementById('p2'),p3:document.getElementById('p3')};
-  var order=['p1','p2','p3'],i=0,timer=null,manual=false;
-  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function show(key){
-    tabs.forEach(function(t){var on=t.dataset.pane===key;t.classList.toggle('on',on);t.setAttribute('aria-selected',on)});
-    Object.keys(panes).forEach(function(k){panes[k].classList.toggle('on',k===key)});
+  var tabs=[].slice.call(document.querySelectorAll('[role="tab"]'));
+  var panels=[].slice.call(document.querySelectorAll('[role="tabpanel"]'));
+  var proof=document.getElementById('proofButton');
+  var status=document.getElementById('receivedStatus');
+  function selectTab(tab,moveFocus){
+    var key=tab.getAttribute('aria-controls');
+    tabs.forEach(function(item){
+      var selected=item===tab;
+      item.setAttribute('aria-selected',String(selected));
+      item.setAttribute('tabindex',selected?'0':'-1');
+    });
+    panels.forEach(function(panel){panel.hidden=panel.id!==key;});
+    if(moveFocus){tab.focus();}
   }
-  function next(){i=(i+1)%order.length;show(order[i])}
-  function stop(){if(timer){clearInterval(timer);timer=null}}
-  tabs.forEach(function(t){t.addEventListener('click',function(){manual=true;stop();show(t.dataset.pane)})});
-  if(!reduce&&!manual){timer=setInterval(next,3200)}
-  document.addEventListener('visibilitychange',function(){document.hidden?stop():(!reduce&&!manual&&(timer=setInterval(next,3200)))});
+  tabs.forEach(function(tab,index){
+    tab.addEventListener('click',function(){selectTab(tab,false);});
+    tab.addEventListener('keydown',function(event){
+      var next=index;
+      if(event.key==='ArrowRight'||event.key==='ArrowDown'){next=(index+1)%tabs.length;event.preventDefault();}
+      if(event.key==='ArrowLeft'||event.key==='ArrowUp'){next=(index-1+tabs.length)%tabs.length;event.preventDefault();}
+      if(event.key==='Home'){next=0;event.preventDefault();}
+      if(event.key==='End'){next=tabs.length-1;event.preventDefault();}
+      if(next!==index){selectTab(tabs[next],true);}
+    });
+  });
+  proof.addEventListener('click',function(){
+    var received=proof.getAttribute('aria-pressed')==='true';
+    proof.setAttribute('aria-pressed',String(!received));
+    proof.classList.toggle('is-received',!received);
+    proof.textContent=received?'校样批注':'已收到';
+    status.textContent=received?'待设计师批注':'已收到 · 可在见面前查看';
+  });
 })();
 </script>
 </body>

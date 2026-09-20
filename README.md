@@ -21,14 +21,16 @@
 
 ## 实战验证
 
-本仓库的 `examples/` 是两次端到端实跑的完整交付（不是 toy demo）：
+本仓库的 `examples/` 是两次端到端实跑和一次创意重做的完整交付（不是 toy demo）：
 
-| 案例 | 评审轨迹 | 说明 |
-|---|---|---|
-| [业主端首页](examples/owner-side/index.html) | 6.5 → 7.5* → 7 → **8.0 确证收敛**（*前两轮受截图管线污染） | 「贴满便签的家」身份：内联 SVG 户型图 + 业主原话便签 |
-| [设计师端首页](examples/designer-side/index.html) | 7.5 → **8.0 收敛** | 「收到的档案」身份：索引标签 + 装订卡 + 红章 |
+| 案例 | 最新独立复评 | 设计身份 |
+|---|---:|---|
+| [业主端首页](examples/owner-side/index.html) | **9.3/10** | 「生活现场的编辑桌」：非对称编辑轴、3D 纸层、房间扫描 canvas、朱砂/酸橙编辑标记 |
+| [设计师端首页](examples/designer-side/index.html) | **9.0/10** | 「档案收藏室」：悬浮索引、错位档案纸层、真实 tab 阅读、页边批注 |
 
-两次实跑共产生 11 条评审改动，经 DOM 度量/像素计算抽查后改判 3 条、修复全部真问题——评审意见要抽查，这条教训已写进协议。
+创意重做前的首轮独立复评是 owner 5.0 / designer 6.5。评审指出两页都残留“说明书/SaaS”结构；重做后删除 owner 的蓝图/黄便签/三等分流程，删除 designer 的价值三卡并改为单一档案页批注，最终复评 owner 9.3、designer 9.0，两个页面均判定通过。
+
+两轮实跑原始过程共产生 11 条评审改动，经 DOM 度量/像素计算抽查后改判 3 条、修复全部真问题；创意重做又经过一轮独立复评。评审意见要抽查，这条教训已写进协议。
 
 ## 文件结构
 
@@ -79,7 +81,7 @@ SKILL.md 的每一节都是可独立摘用的 checklist：四阶段流程、三�
 
 ## 出处
 
-方法体系从三个来源交叉校准：Anshu Chimala 的 [How to turn your AI into a world-class UI designer](https://www.lennysnewsletter.com/p/how-to-turn-your-ai-into-a-world)（Lenny's Newsletter）+ 同主题视频逐帧转录（9,685 字）+ 实践者公众号文章的收敛审查技法，并经两次真实产品端到端实跑回修。
+方法体系从三个来源交叉校准：Anshu Chimala 的 [How to turn your AI into a world-class UI designer](https://www.lennysnewsletter.com/p/how-to-turn-your-ai-into-a-world)（Lenny's Newsletter）+ 同主题视频逐帧转录（9,685 字）+ 实践者公众号文章的收敛审查技法，并经两次真实产品端到端实跑和一次创意重做回修。
 
 ## License
 
