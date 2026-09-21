@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>生意说首页 · 优化前后对比</title>
+<style>
+  :root {
+    --canvas: #FAF7F2;
+    --ink: #22272E;
+    --trust: #5C6F87;
+    --voice: #F2782C;
+    --line: rgba(92, 111, 135, 0.28);
+    --bench: #F1E9DE;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: -apple-system, "PingFang SC", "Noto Sans SC", "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .wrap { width: min(100%, 1180px); margin-inline: auto; padding: 40px 20px 80px; }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; letter-spacing: -0.03em; margin: 0 0 10px; }
+  h2 { font-size: clamp(1.3rem, 2.4vw, 1.8rem); letter-spacing: -0.02em; margin: 56px 0 6px; }
+  h3 { font-size: 17px; margin: 28px 0 8px; }
+  p { margin: 8px 0; color: var(--trust); }
+  .lede { max-width: 780px; }
+  .meta { font-size: 16px; color: var(--trust); }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 15px; }
+
+  .bench { border-block: 1px solid var(--line); background: var(--bench); margin-inline: calc(50% - 50vw); padding: 24px max(20px, calc(50vw - 570px)); }
+  .bench h2 { margin-top: 0; }
+
+  /* 同尺寸叠加滑动对比 */
+  .slider { position: relative; overflow: hidden; border: 1px solid var(--line); background: #fff; touch-action: pan-y; }
+  .slider > img { display: block; width: 100%; height: auto; }
+  .slider .pane { position: absolute; inset: 0; overflow: hidden; }
+  .slider .pane img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+  .slider .handle { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--voice); transform: translateX(-1px); }
+  .slider .handle::after {
+    content: ''; position: absolute; top: 50%; left: 50%; width: 34px; height: 34px;
+    transform: translate(-50%, -50%); border: 3px solid var(--voice); border-radius: 999px; background: var(--canvas);
+  }
+  .slider input[type=range] { position: absolute; inset: auto 0 0 0; width: 100%; margin: 0; opacity: 0; height: 100%; cursor: ew-resize; }
+  .tag { position: absolute; top: 10px; padding: 3px 9px; background: var(--canvas); border: 1px solid var(--line); font-size: 16px; font-weight: 700; }
+  .tag-before { left: 10px; color: var(--trust); }
+  .tag-after { right: 10px; color: var(--ink); }
+
+  .cols { display: grid; gap: 20px; }
+  .cols.two { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  figure { margin: 0; }
+  figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); background: #fff; }
+  figcaption { font-size: 16px; color: var(--trust); margin-top: 6px; }
+  .scrollbox { max-height: 640px; overflow: auto; border: 1px solid var(--line); background: #fff; }
+  .scrollbox img { border: 0; }
+
+  table { border-collapse: collapse; width: 100%; margin-top: 14px; font-size: 16px; }
+  th, td { text-align: left; vertical-align: top; padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line); }
+  th { border-bottom: 1px solid var(--trust); font-size: 16px; }
+  td.dim { color: var(--trust); }
+  .pill { display: inline-block; border: 1px solid var(--line); border-radius: 3px; padding: 1px 7px; font-size: 16px; font-weight: 700; color: var(--trust); }
+  .pill.win { border-color: var(--voice); color: var(--ink); }
+  ul { padding-left: 20px; }
+  li { margin: 4px 0; color: var(--trust); }
+  li strong { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>生意说首页 <code>/</code> · 优化前后对比</h1>
+  <p class="lede">用 <code>ui-design-with-ai</code> 六阶段流程对生意说 Web 首页做一次 <code>REDESIGN</code>：把原来静态的「原话 → AI 整理 → 可生成」示意卡，改成访客可以亲手操作的演示台面。下面是同一份源码、同一台机器上拍的优化前 / 优化后截图。</p>
+  <p class="meta">截图环境：system Chrome，真实 CSS 视口，DSF 1；优化前取自线上 <code>sy.unfog.cn</code>，优化后取自本地生产构建（<code>npm run build</code> + 生产服务器）。</p>
+
+  <div class="bench">
+    <h2>一、首屏叠加对比</h2>
+    <p>左右拖动滑块：左半是优化前，右半是优化后。两张图都是 390×844 的同尺寸截图。注意标题行数从 4 行收到 3 行、台面比原来的示意卡更紧凑，所以标题以下的元素在两侧不是同一高度——那正是这次改动本身，不是渲染错位。</p>
+    <div class="slider" id="slider-mobile">
+      <img src="shots/before_mobile_fold.png" alt="优化前 390×844 首屏" />
+      <div class="pane" id="after-mobile"><img src="shots/after_mobile_fold.png" alt="优化后 390×844 首屏" /></div>
+      <div class="handle" id="handle-mobile"></div>
+      <span class="tag tag-before">优化前</span>
+      <span class="tag tag-after">优化后</span>
+      <input type="range" min="0" max="100" value="50" aria-label="优化前后对比滑块（390×844）" id="range-mobile" />
+    </div>
+
+    <h3>桌面首屏 1440×900</h3>
+    <div class="slider" id="slider-desktop">
+      <img src="shots/before_desktop_fold.png" alt="优化前 1440×900 首屏" />
+      <div class="pane" id="after-desktop"><img src="shots/after_desktop_fold.png" alt="优化后 1440×900 首屏" /></div>
+      <div class="handle" id="handle-desktop"></div>
+      <span class="tag tag-before">优化前</span>
+      <span class="tag tag-after">优化后</span>
+      <input type="range" min="0" max="100" value="50" aria-label="优化前后对比滑块（1440×900）" id="range-desktop" />
+    </div>
+  </div>
+
+  <h2>二、整页并排</h2>
+  <p>同一比例并排。左边优化前 390×2749，右边优化后 390×2795。</p>
+  <div class="cols two">
+    <figure>
+      <div class="scrollbox"><img src="shots/before_mobile_full.png" alt="优化前整页" /></div>
+      <figcaption>优化前 · 整页（390 宽）</figcaption>
+    </figure>
+    <figure>
+      <div class="scrollbox"><img src="shots/after_mobile_full.png" alt="优化后整页" /></div>
+      <figcaption>优化后 · 整页（390 宽）</figcaption>
+    </figure>
+  </div>
+
+  <h2>三、互动状态（优化后才有）</h2>
+  <p>优化前页面上只有 4 个链接，没有任何可操作对象。优化后访客可以亲手完成一次完整循环，下面四张都是同一句原话（理发）。</p>
+  <div class="cols two">
+    <figure><img src="shots/after_mobile_fold.png" alt="待确认" /><figcaption>① 待确认：产物不存在于 DOM</figcaption></figure>
+    <figure><img src="shots/after_mobile_confirmed_full.png" alt="已确认" /><figcaption>② 按下「就按这个理解」：长出 3 条选题</figcaption></figure>
+    <figure><img src="shots/after_mobile_expanded_full.png" alt="展开一条" /><figcaption>③ 展开一条选题：看到「演示内容」开头</figcaption></figure>
+    <figure><img src="shots/after_mobile_undone_full.png" alt="撤销后" /><figcaption>④ 按「等等，我再改改」撤销：产物消失，回到待确认</figcaption></figure>
+  </div>
+
+  <h3>键盘焦点</h3>
+  <p>全部控件可键盘到达，`:focus-visible` 有可见轮廓。下图是确认按钮获得焦点时的台面。</p>
+  <figure><img src="shots/after_mobile_focus_bench.png" alt="确认按钮获得焦点" /><figcaption>确认按钮 focus-visible（390 宽台面）</figcaption></figure>
+
+  <h2>四、换了行当也一样</h2>
+  <p>6 个行当纸签切换演示原话，每句原话有自己的声波形状（由文本确定性派生，不是随机）。</p>
+  <div class="cols two">
+    <figure><img src="shots/after_mobile_barber.png" alt="理发" /><figcaption>理发（默认）</figcaption></figure>
+    <figure><img src="shots/after_mobile_breakfast.png" alt="早餐" /><figcaption>早餐</figcaption></figure>
+    <figure><img src="shots/after_mobile_plumber.png" alt="水电" /><figcaption>水电</figcaption></figure>
+    <figure><img src="shots/after_mobile_pet.png" alt="宠物" /><figcaption>宠物</figcaption></figure>
+  </div>
+
+  <h2>五、其它视口</h2>
+  <div class="cols two">
+    <figure><img src="shots/before_desktop_full.png" alt="优化前桌面整页" /><figcaption>优化前 · 桌面整页（1440 宽）</figcaption></figure>
+    <figure><img src="shots/after_desktop_full.png" alt="优化后桌面整页" /><figcaption>优化后 · 桌面整页（1440 宽）</figcaption></figure>
+    <figure><img src="shots/after_pad_full.png" alt="优化后 768" /><figcaption>优化后 · 768×1024</figcaption></figure>
+    <figure><img src="shots/after_narrow_full.png" alt="优化后 320" /><figcaption>优化后 · 320 宽（纸签改换行，无半字截断）</figcaption></figure>
+  </div>
+
+  <h2>六、改了什么</h2>
+  <table>
+    <thead><tr><th style="width:22%">维度</th><th style="width:39%">优化前</th><th>优化后</th></tr></thead>
+    <tbody>
+      <tr><td>可操作对象</td><td class="dim">0 个。全页只有 4 个 <code>&lt;a&gt;</code>，无任何 JS 交互（页面是 Server Component，无 hooks）。</td><td><span class="pill win">可玩</span> 6 个行当纸签 + 确认 + 撤销 + 3 条可展开选题，全部键盘可达。</td></tr>
+      <tr><td>「未确认不进入生成」</td><td class="dim">靠一行文字声明：未确认，不进入后续生成。</td><td><span class="pill win">靠结构</span> 未确认时选题节点**不存在于 DOM**（不是隐藏），确认后才渲染，撤销后消失。</td></tr>
+      <tr><td>核心机制的表达</td><td class="dim">静态三段卡，访客只能读。</td><td><span class="pill win">可做一遍</span> 选一句 → 看整理 → 自己拍板 → 看到产物 → 反悔。</td></tr>
+      <tr><td>行当覆盖</td><td class="dim">1 句演示原话（理发/熟客）。</td><td>6 个行当各 1 句（理发 / 早餐 / 水电 / 汽修 / 花店 / 宠物），各自有自己的整理结果与 3 条选题。</td></tr>
+      <tr><td>声音的视觉化</td><td class="dim">无。橙色只作为小圆点和标签底色。</td><td>每句原话有一条 44 段声波，形状由该句文本确定性派生；确认后声波收束成一条线。</td></tr>
+      <tr><td>排版角色</td><td class="dim">全站无衬线，人说的话和机器的整理看起来一样。</td><td>人说的话用衬线（Songti SC），机器的结构用无衬线；两者在字体上分开。</td></tr>
+      <tr><td>台面与出血</td><td class="dim">示意卡在内容列内，圆角卡片。</td><td>台面满宽出血，原话纸条轻微倾斜并溢出内容列 16px；容器改为 3px 直角。</td></tr>
+      <tr><td>重复叙事</td><td class="dim">首屏示意卡与第二段「原话/AI 整理/用户确认」用同一句原话讲同一件事。</td><td>第二段改为讲「确认这一步为什么不能省」（原话不被改写 / 只归类不下结论 / 确认不等于真实性认证）。</td></tr>
+      <tr><td>死代码</td><td class="dim"><code>landing.module.css</code> 有 5 个未被引用的类（trustSection/trustGrid/trustLead/boundaryList/policyLinks）。</td><td>已清理。</td></tr>
+      <tr><td>首屏契约</td><td>390×844 首屏：标题、演示、主 CTA、时长与积分都在（facts 底部 ≈800）。</td><td><span class="pill">保持</span> 390×844 首屏 facts 底部 799；桌面 1440×900 从「CTA 在折线以下」变为 facts 底部 833。</td></tr>
+      <tr><td>可访问性</td><td class="dim">小字用蓝灰 #5C6F87；在暖纸画布上 4.82:1，勉强过 AA。</td><td>新增台面色后，同色在台面上只有 4.28:1 → 不达标。已引入 <code>--landing-trust-ink</code>（#4C5D74）专用于小字，边框与结构线仍用 #5C6F87。</td></tr>
+      <tr><td>代价</td><td class="dim">落地页路由 First Load JS 107 kB（QA 用 HEAD 版本另建副本实测）。</td><td>新增一个客户端交互岛，落地页路由 2.18 kB / First Load JS 108 kB（约 +1 kB）。</td></tr>
+    </tbody>
+  </table>
+
+  <h2>七、这份对比不能证明什么</h2>
+  <ul>
+    <li><strong>不能证明转化更好。</strong>本轮没有流量、没有 A/B、没有用户测试；只能证明「机制可以被亲手做一遍」。</li>
+    <li><strong>不能证明真机微信内核表现。</strong>截图来自 system Chrome；微信内置浏览器未测。</li>
+    <li><strong>不能证明读屏体验。</strong>DOM 语义与 ARIA 已按规范实现并有自动化证据，但没有真实读屏走查。</li>
+    <li><strong>不是生产验收。</strong>优化后代码只在本地工作树内实现并验证，未提交、未部署。</li>
+  </ul>
+</div>
+
+<script>
+  function wire(sliderId, afterId, handleId, rangeId) {
+    const slider = document.getElementById(sliderId);
+    const after = document.getElementById(afterId);
+    const handle = document.getElementById(handleId);
+    const range = document.getElementById(rangeId);
+    function apply() {
+      const pct = Number(range.value);
+      after.style.width = pct + '%';
+      handle.style.left = pct + '%';
+    }
+    range.addEventListener('input', apply);
+    slider.addEventListener('pointermove', (e) => {
+      if (e.buttons !== 1) return;
+      const rect = slider.getBoundingClientRect();
+      range.value = String(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
+      apply();
+    });
+    apply();
+  }
+  wire('slider-mobile', 'after-mobile', 'handle-mobile', 'range-mobile');
+  wire('slider-desktop', 'after-desktop', 'handle-desktop', 'range-desktop');
+</script>
+</body>
+</html>
