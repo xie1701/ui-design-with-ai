@@ -7,7 +7,7 @@
 - CREATE：从零创建 Web 页面/产品界面
 - REDESIGN：重做现有 Web UI
 - CRITIQUE：只评审静态视觉，不改代码
-- QA：只验证工程、交互、可访问性和响应式
+- QA：只验证并报告工程、交互、可访问性和响应式；不修改产品代码。需要修复时，显式组合 REDESIGN/COMPONENT 或先取得修改授权。
 - COMPONENT：创建或重做 Web 组件
 
 统一六阶段：Discover → Define → Develop → Build → Critique → Deliver。

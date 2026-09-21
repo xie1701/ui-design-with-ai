@@ -55,6 +55,8 @@ ui-design-with-ai/
 以 Claude Code 为例：
 
 ```bash
+mkdir -p ~/.claude/skills
+
 git clone https://github.com/xie1701/ui-design-with-ai.git \
   ~/.claude/skills/ui-design-with-ai
 
@@ -66,6 +68,7 @@ test -f ~/.claude/skills/ui-design-with-ai/SKILL.md
 ### Cola 本地开发
 
 ```bash
+mkdir -p ~/code ~/.cola/skills
 git clone https://github.com/xie1701/ui-design-with-ai.git ~/code/ui-design-with-ai
 ln -s ~/code/ui-design-with-ai ~/.cola/skills/ui-design-with-ai
 ```
@@ -98,7 +101,7 @@ npx playwright screenshot --channel=chrome \
 | [业主端](examples/owner-side/index.html) | 9.3/10 | 当时截图上的设计身份和可见层级得到认可 | 不代表屏幕阅读器、性能、真机或用户任务通过 |
 | [设计师端](examples/designer-side/index.html) | 9.0/10 | 当时截图上的档案视觉方向得到认可 | 不代表生产级整体质量或跨模型稳定性 |
 
-完整限制见[匿名化业主端案例证据包](case-studies/owner-side/README.md)。该案例保留 brief、方向、identity、评审记录和 QA，但模型精确版本、完整 token/耗时和真实用户测试未记录，不得据此宣称“小白稳定复现”。
+完整限制见[公开案例证据包](case-studies/owner-side/README.md)。案例中的人物、家庭结构、户型、作息和预算均为合成演示数据；证据包保留 brief、方向、identity、评审记录和 QA，但模型精确版本、完整 token/耗时和真实用户测试未记录，不得据此宣称“小白稳定复现”。
 
 ## 依赖
 

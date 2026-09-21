@@ -10,7 +10,10 @@
    - 先广后深；用外部输入、具体视觉隐喻和独立 Critic 扩大并收敛设计空间。
    - 评审角色与实现角色隔离；最后做减法。
 
-2. **同主题视频讲解（约 26 分 49 秒）**
+2. **内部附件视频观察（不可由公开仓库独立复核）**
+   - 文件标题：`如何使用 AI 做出顶级的 UI 设计 - 001 - 如何使用 AI 做出顶级的 UI 设计.mp4`
+   - 时长约 26 分 49 秒；作者、公开发布日期与稳定 URL 未记录，分析日期为 2026-09-20。
+   - 以下内容来自当时的人工回看与分段 ASR，只作为辅助观察，不单独构成规范依据；公开读者应以其余可访问来源和项目实证为准。
    - 强调完整 Double Diamond：Discover → Define → Develop → Deliver。
    - “拍照识别热量”等功能只是解法假设，不能直接等同用户需求。
    - 随机字符串只是发散工具，明确的多维约束通常更重要。
@@ -30,8 +33,17 @@
 6. **W3C — WCAG 2.2**
    https://www.w3.org/TR/WCAG22/
 
-7. **Apple Human Interface Guidelines / Material Design 3 / Figma Design Crit**
-   - 只在对应平台或评审语境使用，不把品牌风格当滤镜，也不混用设计系统。
+7. **Apple Human Interface Guidelines**（持续更新；访问于 2026-09-20）
+   https://developer.apple.com/design/human-interface-guidelines/
+   - 仅在 Apple 平台相邻语境中参考布局、字体、材料、动效与无障碍原则；不把 “Apple-like” 当作视觉滤镜。
+
+8. **Material Design 3 — Foundations**（持续更新；访问于 2026-09-20）
+   https://m3.material.io/foundations
+   - 用于 Material 语境中的结构、排版、颜色、状态与无障碍基础；不与其他设计系统随意混用。
+
+9. **Figma Design Team — From Figma's design team: How to run a design critique**（访问于 2026-09-21）
+   https://www.figma.com/blog/design-critiques-at-figma/
+   - 支撑“先对齐评审目标、提供项目语境、收集具体且可行动反馈、记录后续行动”的 Critique 工作方式；不支撑视觉分数的客观性。
 
 ## 从来源推演出的工作机制
 
@@ -54,7 +66,7 @@
 4. **评审事实误判**：Critic 曾误读颜色、裁切和空白尺寸。现在要求用 DOM 度量、像素取样或局部截图复核事实陈述。
 5. **资源条件**：多实例发散只在资源允许且差异价值足够时使用，单会话文字发散不应阻塞流程。
 
-公开的匿名化案例证据位于 [`../case-studies/owner-side/`](../case-studies/owner-side/)。它展示一次流程如何执行，不足以证明跨项目、跨操作者或“小白稳定产出”。
+公开案例证据位于 [`../case-studies/owner-side/`](../case-studies/owner-side/)。其中人物与数值为合成演示数据；它展示一次流程如何执行，不足以证明跨项目、跨操作者或“小白稳定产出”。
 
 ## 谨慎结论
 

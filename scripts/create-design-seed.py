@@ -6,17 +6,27 @@ import string
 import sys
 
 ALPHABET = string.ascii_letters + string.digits
+ERROR = "usage: create-design-seed.py [length], where length is 16..4096"
 
 
 def main() -> int:
+    if len(sys.argv) > 2:
+        print(ERROR, file=sys.stderr)
+        return 2
+
+    raw = sys.argv[1] if len(sys.argv) == 2 else "96"
+    if raw == "":
+        print(ERROR, file=sys.stderr)
+        return 2
+
     try:
-        length = int(sys.argv[1]) if len(sys.argv) > 1 else 96
+        length = int(raw)
     except ValueError:
-        print("length must be an integer between 16 and 4096", file=sys.stderr)
+        print(ERROR, file=sys.stderr)
         return 2
 
     if not 16 <= length <= 4096:
-        print("length must be an integer between 16 and 4096", file=sys.stderr)
+        print(ERROR, file=sys.stderr)
         return 2
 
     print("".join(secrets.choice(ALPHABET) for _ in range(length)))

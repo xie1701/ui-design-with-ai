@@ -16,10 +16,10 @@ description: 面向 Web UI 的 AI 设计与评审流程，用于创建或重做�
 | `CREATE` | 从需求创建 Web 页面/产品界面 | 全六阶段 |
 | `REDESIGN` | 重做现有 Web UI | Discover（现状）→ Define → Develop → Build → Critique → Deliver |
 | `CRITIQUE` | 只做截图视觉评审 | Discover（目标与证据）→ Define（评审边界）→ Critique → Deliver（报告） |
-| `QA` | 验证现有实现 | Discover（范围）→ Define（矩阵）→ Build（测试准备/必要修复）→ Critique（可选视觉检查）→ Deliver |
+| `QA` | 只验证并报告现有实现 | Discover（范围）→ Define（矩阵）→ Build（仅测试夹具/环境准备）→ Critique（可选视觉检查）→ Deliver；不修改产品代码 |
 | `COMPONENT` | 创建或重做 Web 组件 | Discover → Define → Develop（适用时）→ Build → Critique → Deliver |
 
-不得为了“走全流程”制造无关工件。纯 `CRITIQUE` 不改代码；纯 `QA` 不把视觉重设计当默认动作。
+不得为了“走全流程”制造无关工件。纯 `CRITIQUE` 和纯 `QA` 都只报告、不修改产品代码；若要根据结果修复，必须显式组合 `REDESIGN` / `COMPONENT`，或先取得修改授权。
 
 ## 2. Discover：收集现状与证据
 
