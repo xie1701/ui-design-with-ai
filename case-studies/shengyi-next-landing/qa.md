@@ -6,7 +6,7 @@
 
 - 日期：2026-09-21
 - 执行者：独立 QA 子会话两轮（`shengyi-engineering-qa`、`shengyi-qa-round2`），主会话复核并执行修复；评审员均为只读，未修改仓库文件
-- commit/build：工作树内未提交改动；`npm run build` 生产构建（`PORT=3999 NODE_ENV=production node server/index.js`）
+- commit/build：评审时为工作树内未提交改动，其后提交为本地 `41f5d2d`（未推送、未部署）；`npm run build` 生产构建（`PORT=3999 NODE_ENV=production node server/index.js`）
 - 浏览器/版本：system Chrome（Playwright `channel: chrome`）；一轮用 chromium-1234 复核
 - 操作系统/设备：macOS（Darwin 27.2.0）；未上真机
 - CSS 视口与 DSF：390×844、768×1024、1440×900、320×700、1024×768，DSF 1

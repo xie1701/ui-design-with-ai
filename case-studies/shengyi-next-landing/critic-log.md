@@ -1,6 +1,6 @@
 # Critic Log · 生意说首页互动化
 
-- 评审对象：`src/app/page.js`、`src/app/landing-bench.js`、`src/app/landing.module.css`（工作树内改动，未提交）
+- 评审对象：`src/app/page.js`、`src/app/landing-bench.js`、`src/app/landing.module.css`（评审时为工作树内改动；其后提交为本地 `41f5d2d`）
 - 证据基线：生产构建（`npm run build` + `PORT=3999 NODE_ENV=production node server/index.js`），system Chrome 真实 CSS 视口
 - 轮次预算：视觉 Critic 1 轮（含优化前/优化后各一次评分）；工程 QA 2 轮
 

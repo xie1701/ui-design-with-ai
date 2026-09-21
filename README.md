@@ -102,7 +102,7 @@ npx playwright screenshot --channel=chrome \
 |---|---:|---|---|
 | [业主端](examples/owner-side/index.html) | 9.3/10 | 当时截图上的设计身份和可见层级得到认可 | 不代表屏幕阅读器、性能、真机或用户任务通过 |
 | [设计师端](examples/designer-side/index.html) | 9.0/10 | 当时截图上的档案视觉方向得到认可 | 不代表生产级整体质量或跨模型稳定性 |
-| [生意说首页互动化](case-studies/shengyi-next-landing/README.md) | 5.0 → 6.6 | 在已上线产品上跑完六阶段：把「只有确认才继续」从文字声明改成可亲手操作的结构；工程 QA 阻断项 0 | 不代表转化更好、真机通过或读屏可用；改动未提交未部署 |
+| [生意说首页互动化](case-studies/shengyi-next-landing/README.md) | 5.0 → 6.6 | 在已上线产品上跑完六阶段：把「只有确认才继续」从文字声明改成可亲手操作的结构；工程 QA 阻断项 0 | 不代表转化更好、真机通过或读屏可用；改动已提交到本地 main（`41f5d2d`），未推送、未部署 |
 
 完整限制见[公开案例证据包](case-studies/owner-side/README.md)与[生意说首页案例](case-studies/shengyi-next-landing/README.md)。案例中的人物、家庭结构、户型、作息和预算均为合成演示数据；证据包保留 brief、方向、identity、评审记录和 QA，但模型精确版本、完整 token/耗时和真实用户测试未记录，不得据此宣称“小白稳定复现”。
 
