@@ -1,87 +1,115 @@
 # ui-design-with-ai
 
-**用 AI 稳定产出顶级 UI 设计的可复用生产系统** · A reusable harness for producing top-tier UI design with AI.
+一套面向 **Web UI** 的 AI 设计与验证 Harness：把需求定义、视觉发散、实现、静态视觉评审和工程 QA 分开记录，减少模板化输出与“高分等于已验收”的误判。
 
-这不是一个"生成一张好看的页面"的提示词，而是一套完整的生产流程（Harness）：
+> Discover → Define → Develop → Build → Critique → Deliver
 
-> 先确认真正的问题 → 扩大解法空间 → 建立设计身份 → 独立评审闭环 → 工程验收交付。
+它更适合被理解为一套可复用工作流，而不是“神级提示词”。目前证据表明它能帮助操作者系统化探索与复核；尚没有多任务、多名新手的对照实验，因此不宣称已经证明“稳定产出顶级 UI”。
 
-核心信念：**Prompt 只解决一次任务，流程解决以后所有任务。** 你（或 AI）的任务不是替模型审美，而是把产品判断、审美判断和质量标准变成可观察、可比较、可迭代的决策。
+## 能做什么
 
-## 为什么不是又一个"神级提示词"
+- `CREATE`：从需求创建 Web 页面或 Web app 界面
+- `REDESIGN`：重做现有网页
+- `CRITIQUE`：只做静态视觉评审
+- `QA`：验证交互、响应式、无障碍和工程质量
+- `COMPONENT`：创建或重做 Web 组件与适用状态
 
-大多数 AI 设计提示词产出的是"平均水平的漂亮"——模板感、渐变 hero、无意义装饰。这套系统的不同：
+不用于原生 iOS/Android App、纯平面海报或仅生成图片。
 
-- **完整 Double Diamond 四阶段**：Discover（发现真实问题）→ Define（定义核心问题）→ Develop（12 方向发散）→ Deliver（收敛交付）。"解法≠需求"——用户说"记下我每天吃了什么"时，真正的问题是"记下来太麻烦"。
-- **三个设计旋钮**：DESIGN_VARIANCE / MOTION_INTENSITY / VISUAL_DENSITY，把"风格"变成可调参数。
-- **设计身份**：每次设计必须有一句可以说服设计师的"为什么长这样"，而不是 token 拼贴。
-- **独立 Critic 评审闭环**：隔离上下文、统一 rubric、维度打分、最多 3 轮自动迭代、停止线机制。
-- **禁用词表**：现代 / 美观 / 简洁 / 高端 / 大气 / 赋能 / 解锁 / 重新定义——这些词没有设计信息。
-- **截图管线四查**：评审截图本身可能是错的（视口污染、动画伪影），先验证管线再评审。
+## 核心边界
 
-## 实战验证
-
-本仓库的 `examples/` 是两次端到端实跑和一次创意重做的完整交付（不是 toy demo）：
-
-| 案例 | 最新独立复评 | 设计身份 |
-|---|---:|---|
-| [业主端首页](examples/owner-side/index.html) | **9.3/10** | 「生活现场的编辑桌」：非对称编辑轴、3D 纸层、房间扫描 canvas、朱砂/酸橙编辑标记 |
-| [设计师端首页](examples/designer-side/index.html) | **9.0/10** | 「档案收藏室」：悬浮索引、错位档案纸层、真实 tab 阅读、页边批注 |
-
-创意重做前的首轮独立复评是 owner 5.0 / designer 6.5。评审指出两页都残留“说明书/SaaS”结构；重做后删除 owner 的蓝图/黄便签/三等分流程，删除 designer 的价值三卡并改为单一档案页批注，最终复评 owner 9.3、designer 9.0，两个页面均判定通过。
-
-两轮实跑原始过程共产生 11 条评审改动，经 DOM 度量/像素计算抽查后改判 3 条、修复全部真问题；创意重做又经过一轮独立复评。评审意见要抽查，这条教训已写进协议。
+- **Visual Critic** 只评价截图可见的任务线索、层级、构图、设计身份与细节；截图不能证明的交互、键盘、读屏、性能等一律 `N/A`，不进入视觉总分。
+- **Engineering QA** 只使用 `PASS / FAIL / N/A / NOT TESTED` 和证据矩阵。
+- 自动评审轮数只是预算上限，不等于通过。
+- 方向数、并行实例、参考图数量、设计旋钮与评分线都是可调整 heuristic，不是质量保证。
 
 ## 文件结构
 
-```
+```text
 ui-design-with-ai/
-├── SKILL.md                      # 六阶段总控流程（核心，270 行）
+├── SKILL.md
 ├── references/
-│   ├── master-prompt.md          # 任意聊天工具可手贴的六阶段模板
-│   ├── critic-prompt.md          # 独立评审协议
-│   ├── quality-rubric.md         # 六维度评分 rubric
-│   ├── brief-template.md         # 需求简报模板
-│   └── source-notes.md           # 方法出处与实战回修记录
-└── scripts/
-    └── create-design-seed.sh     # 设计种子生成（16–4096 位）
+│   ├── master-prompt.md
+│   ├── brief-template.md
+│   ├── directions-template.md
+│   ├── design-identity-template.md
+│   ├── critic-prompt.md
+│   ├── critic-log-template.md
+│   ├── quality-rubric.md
+│   ├── qa-template.md
+│   ├── prompt-graveyard-template.md
+│   └── source-notes.md
+├── scripts/
+│   ├── create-design-seed.py
+│   └── create-design-seed.sh
+├── examples/
+└── case-studies/
 ```
 
-## 怎么用
+仓库根目录就是 Skill 根目录，`SKILL.md` 不再嵌套一层。
 
-### 方式一：支持 Agent Skills 规范的工具（Claude Code / Claude Desktop 等）
+## 安装
+
+### Agent Skills 目录
+
+以 Claude Code 为例：
 
 ```bash
-git clone https://github.com/xie1701/ui-design-with-ai.git
-mkdir -p ~/.claude/skills
-cp -R ui-design-with-ai ~/.claude/skills/
+git clone https://github.com/xie1701/ui-design-with-ai.git \
+  ~/.claude/skills/ui-design-with-ai
+
+test -f ~/.claude/skills/ui-design-with-ai/SKILL.md
 ```
 
-然后对 agent 说：**"用 ui-design-with-ai 给 XX 做个落地页"**，六阶段流程自动接管。
+其他支持 Agent Skills 的工具，把仓库 clone 到其 skills 目录下的 `ui-design-with-ai/` 即可。
 
-### 方式二：任意聊天工具（ChatGPT / Kimi / 豆包……零安装）
+### Cola 本地开发
 
-1. 打开 `references/master-prompt.md`，整份贴到对话开头
-2. 按六阶段走：贴需求 → 发散 12 方向 → 选方向定身份 → 实现
-3. **关键一步**：把实现截图发给一个**全新的对话**当 Critic（评审者不能看过实现过程），配合 `references/critic-prompt.md` 打分
-4. 按分数迭代，最多 3 轮，然后停
+```bash
+git clone https://github.com/xie1701/ui-design-with-ai.git ~/code/ui-design-with-ai
+ln -s ~/code/ui-design-with-ai ~/.cola/skills/ui-design-with-ai
+```
 
-### 方式三：当方法论文档读（给人类设计师）
+### 任意聊天工具
 
-SKILL.md 的每一节都是可独立摘用的 checklist：四阶段流程、三旋钮、禁用词表、组件状态清单、动效三问、截图管线四查、评审协议、减法审查。
+1. 打开 [主控提示词](references/master-prompt.md)，贴入新对话。
+2. 按任务选择 CREATE / REDESIGN / CRITIQUE / QA / COMPONENT。
+3. Visual Critic 使用[独立评审协议](references/critic-prompt.md)，最好放在不含实现历史的新对话。
+4. 工程验收使用 [QA 模板](references/qa-template.md)，不要用视觉分代替验证。
 
-## 评审前必须过的截图管线四查
+## 截图协议
 
-评审截图是 Critic 的唯一感官，管线失真会让评审"确认"不存在的 bug（我们实测中 Chrome headless 把 390px 视口按 756px 布局渲染，两轮评审基于失真输入）：
+评审包至少包含：首屏目标视口、全页图、关键局部裁剪。记录 CSS 视口、device scale factor、浏览器/引擎和页面状态；外发前先脱敏。
 
-1. **视口宽度 = 目标宽度**——不信任 headless 浏览器的 window-size，用 `npx playwright screenshot --channel=chrome --viewport-size=390,844 --full-page --wait-for-timeout=1500 <url> out.png`
-2. **整页高度 = scrollHeight**——固定高窗口截图会产生画布余白
-3. **像素宽 = 视口宽**——sips/ffprobe 核对
-4. **动画已完成**——半透明中间帧会被当成"渲染故障"
+已验证过的一种命令是使用本机 Chrome：
 
-## 出处
+```bash
+npx playwright screenshot --channel=chrome \
+  --viewport-size=390,844 --full-page --wait-for-timeout=1500 \
+  <url> out.png
+```
 
-方法体系从三个来源交叉校准：Anshu Chimala 的 [How to turn your AI into a world-class UI designer](https://www.lennysnewsletter.com/p/how-to-turn-your-ai-into-a-world)（Lenny's Newsletter）+ 同主题视频逐帧转录（9,685 字）+ 实践者公众号文章的收敛审查技法，并经两次真实产品端到端实跑和一次创意重做回修。
+这不是唯一方案。没有 system Chrome 时可使用 Playwright bundled Chromium/Firefox/WebKit，或其他能设置真实 CSS 视口并输出截图的工具；应记录工具与版本，并核对 CSS viewport、截图像素尺寸和 DSF。
+
+## 案例与证据边界
+
+| 案例 | 单模型静态视觉评审 | 可以说明什么 | 不能说明什么 |
+|---|---:|---|---|
+| [业主端](examples/owner-side/index.html) | 9.3/10 | 当时截图上的设计身份和可见层级得到认可 | 不代表屏幕阅读器、性能、真机或用户任务通过 |
+| [设计师端](examples/designer-side/index.html) | 9.0/10 | 当时截图上的档案视觉方向得到认可 | 不代表生产级整体质量或跨模型稳定性 |
+
+完整限制见[匿名化业主端案例证据包](case-studies/owner-side/README.md)。该案例保留 brief、方向、identity、评审记录和 QA，但模型精确版本、完整 token/耗时和真实用户测试未记录，不得据此宣称“小白稳定复现”。
+
+## 依赖
+
+- Skill 文档本身无平台专有依赖。
+- 设计种子优先使用 Python 3：`python3 scripts/create-design-seed.py`。
+- `scripts/create-design-seed.sh` 是兼容入口：优先调用 Python 3；缺少 Python 时在有 `/dev/urandom` 的 Unix 环境回退。
+- 截图和 QA 工具按项目环境选择，Playwright 只是示例。
+
+## 来源
+
+方法来源与哪些内容属于工程化推演，见 [source notes](references/source-notes.md)。
 
 ## License
 
