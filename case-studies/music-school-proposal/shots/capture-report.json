@@ -1,0 +1,343 @@
+{
+  "engine": "chrome (system)",
+  "notes": [],
+  "shots": [
+    {
+      "file": "mobile_fold.png",
+      "css": "390x844",
+      "dsf": 2,
+      "bytes": 750609
+    },
+    {
+      "file": "mobile_full.png",
+      "css": "390x844",
+      "dsf": 2,
+      "bytes": 10912787,
+      "capture": {
+        "method": "scroll-stitch",
+        "devicePixels": 25390,
+        "segments": 16
+      }
+    },
+    {
+      "file": "narrow_fold.png",
+      "css": "320x700",
+      "dsf": 2,
+      "bytes": 609209
+    },
+    {
+      "file": "narrow_full.png",
+      "css": "320x700",
+      "dsf": 2,
+      "bytes": 10580282,
+      "capture": {
+        "method": "scroll-stitch",
+        "devicePixels": 29378,
+        "segments": 21
+      }
+    },
+    {
+      "file": "pad_fold.png",
+      "css": "768x1024",
+      "dsf": 2,
+      "bytes": 1601130
+    },
+    {
+      "file": "pad_full.png",
+      "css": "768x1024",
+      "dsf": 2,
+      "bytes": 16718108,
+      "capture": {
+        "method": "scroll-stitch",
+        "devicePixels": 21064,
+        "segments": 11
+      }
+    },
+    {
+      "file": "desktop_fold.png",
+      "css": "1440x900",
+      "dsf": 1,
+      "bytes": 574740
+    },
+    {
+      "file": "desktop_full.png",
+      "css": "1440x900",
+      "dsf": 1,
+      "bytes": 2110505,
+      "capture": {
+        "method": "fullPage",
+        "devicePixels": 10075
+      }
+    }
+  ],
+  "mobile": {
+    "viewport": "390x844",
+    "dsf": 2,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "scrollHeight": 12695,
+    "rail": true,
+    "topProgress": false,
+    "h1": {
+      "top": 61,
+      "bottom": 176,
+      "h": 115
+    },
+    "overture": {
+      "top": 277,
+      "bottom": 435,
+      "h": 158
+    },
+    "inst": {
+      "top": 455,
+      "bottom": 744,
+      "h": 289
+    },
+    "soundKey": {
+      "top": 606,
+      "bottom": 660,
+      "h": 54
+    },
+    "fonts": [
+      "16px",
+      "17px",
+      "19px",
+      "20px",
+      "21px",
+      "25px",
+      "35.1px"
+    ],
+    "canvasCount": 5,
+    "railBars": 88,
+    "topBars": 56,
+    "consoleErrors": [],
+    "externalRequests": []
+  },
+  "narrow": {
+    "viewport": "320x700",
+    "dsf": 2,
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "scrollHeight": 14689,
+    "rail": true,
+    "topProgress": false,
+    "h1": {
+      "top": 61,
+      "bottom": 203,
+      "h": 142
+    },
+    "overture": {
+      "top": 333,
+      "bottom": 523,
+      "h": 190
+    },
+    "inst": {
+      "top": 543,
+      "bottom": 832,
+      "h": 289
+    },
+    "soundKey": {
+      "top": 694,
+      "bottom": 748,
+      "h": 54
+    },
+    "fonts": [
+      "16px",
+      "17px",
+      "19px",
+      "20px",
+      "21px",
+      "25px",
+      "30px"
+    ],
+    "canvasCount": 5,
+    "railBars": 88,
+    "topBars": 56,
+    "consoleErrors": [],
+    "externalRequests": []
+  },
+  "pad": {
+    "viewport": "768x1024",
+    "dsf": 2,
+    "scrollWidth": 768,
+    "clientWidth": 768,
+    "scrollHeight": 10532,
+    "rail": true,
+    "topProgress": false,
+    "h1": {
+      "top": 61,
+      "bottom": 250,
+      "h": 189
+    },
+    "overture": {
+      "top": 350,
+      "bottom": 505,
+      "h": 155
+    },
+    "inst": {
+      "top": 525,
+      "bottom": 833,
+      "h": 308
+    },
+    "soundKey": {
+      "top": 762,
+      "bottom": 816,
+      "h": 54
+    },
+    "fonts": [
+      "16px",
+      "17px",
+      "18px",
+      "23px",
+      "26px",
+      "30px",
+      "39px",
+      "62px"
+    ],
+    "canvasCount": 5,
+    "railBars": 88,
+    "topBars": 56,
+    "consoleErrors": [],
+    "externalRequests": []
+  },
+  "desktop": {
+    "viewport": "1440x900",
+    "dsf": 1,
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "scrollHeight": 10075,
+    "rail": false,
+    "topProgress": true,
+    "h1": {
+      "top": 81,
+      "bottom": 270,
+      "h": 189
+    },
+    "overture": {
+      "top": 370,
+      "bottom": 484,
+      "h": 114
+    },
+    "inst": {
+      "top": 504,
+      "bottom": 812,
+      "h": 308
+    },
+    "soundKey": {
+      "top": 741,
+      "bottom": 795,
+      "h": 54
+    },
+    "fonts": [
+      "16px",
+      "17px",
+      "18px",
+      "23px",
+      "26px",
+      "30px",
+      "39px",
+      "62px"
+    ],
+    "canvasCount": 5,
+    "railBars": 88,
+    "topBars": 56,
+    "consoleErrors": [],
+    "externalRequests": []
+  },
+  "interactions": {
+    "roleSwitch": {
+      "before": "true",
+      "after0": "false",
+      "after2": "true"
+    },
+    "axisSwitch": {
+      "n0": "false",
+      "n2": "true"
+    },
+    "recordHeld": {
+      "status": "已存进这条时间轴",
+      "meter": "100%"
+    },
+    "compose": {
+      "s0": "false",
+      "s1": "true"
+    }
+  },
+  "focusOrder": [
+    {
+      "tag": "A",
+      "text": "跳到正文",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "按住发声",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "一位新家长一屏之内看懂：青禾是个什么",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "一位在读家长自己孩子的成长：每一节课",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "一位老师自己的工作台，也是自己的名片",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "您一眼看清青禾的运转：多少孩子在读、",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "01每节课后，老师的点评和嘱咐，一字",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "02老师布置的练习，孩子完成得怎么样",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "03孩子在家练琴的视频，传上来，老师",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "04每一节课后，孩子自己对着手机说三",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "按住三秒",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "哼一段旋律",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "描述今天的心情",
+      "outline": "2px solid"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "几张照片",
+      "outline": "2px solid"
+    }
+  ],
+  "reducedMotion": {
+    "animations": [],
+    "dawnAngle": "181",
+    "composeWorks": true
+  }
+}

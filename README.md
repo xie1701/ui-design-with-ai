@@ -38,11 +38,18 @@
 
 ![两个案例的桌面首屏](assets/creative.png)
 
+### 三、把一份 10,616 字节的文档，一字不改做成能按的页面
+
+![青禾艺术「听见」提案落地页（已脱敏）](assets/proposal.png)
+
+这个案例的约束不一样：源文档是一份中文产品提案，**文案一字不能改**。所以保真没有靠人抄、也没有靠通读检查，而是做成了构建期约束——文案由脚本从文档提取，页面模板只写占位符，**构建时漏一条就失败**；验收时再逐条比对渲染后的 DOM（开 JS / 关 JS 各一遍）。
+
 ### 案例一览
 
 | 案例 | 独立视觉评审 | 能说明什么 | 不能说明什么 |
 |---|---:|---|---|
 | [生意说首页互动化](case-studies/shengyi-next-landing/README.md) | 5.0 → 6.6 | 在已上线产品上跑完六阶段：把「只有确认才继续」从文字声明改成可亲手操作的结构；工程 QA 阻断项 0 | 不代表转化更好、真机通过或读屏可用；改动已提交到本地 main（`41f5d2d`），未推送、未部署 |
+| [「听见」提案落地页](case-studies/music-school-proposal/README.md) | 见案例 | 把一份 102 条文案的长文档做成可交互单页，**文案 102/102 逐条命中且顺序一致**，工程检查 28/28 PASS；三轮独立视觉评审的成立项全部落地并复验 | 已脱敏（机构名/称谓/城市/联系方式为占位值）；不代表真人用过、真机通过或读屏可用；页内互动均为概念演示 |
 | [业主端 · 生活现场的编辑桌](examples/owner-side/index.html) | 9.3/10 | 当时截图上的设计身份和可见层级得到认可 | 不代表屏幕阅读器、性能、真机或用户任务通过 |
 | [设计师端 · 档案收藏室](examples/designer-side/index.html) | 9.0/10 | 当时截图上的档案视觉方向得到认可 | 不代表生产级整体质量或跨模型稳定性 |
 
@@ -123,6 +130,8 @@ npx playwright screenshot --channel=chrome \
 这不是唯一方案。没有 system Chrome 时可用 Playwright bundled Chromium/Firefox/WebKit，或其他能设置真实 CSS 视口并输出截图的工具；应记录工具与版本，并核对 CSS viewport、截图像素尺寸和 DSF。
 
 > 踩过的坑：macOS 上 Chrome headless 用 `--window-size=390` 会**按 756px 布局再缩放**输出，必须用 `--viewport-size`（Playwright）才拿到真实视口。
+>
+> 另一个更隐蔽的坑：**`fullPage` 全页截图在 device pixels 超过约 16384 时会产出与页面不对应的图**（图看起来正常，内容是错的）。先算 `scrollHeight × DSF`，超限就改成滚动分段拼接。**而且即使不超限，只要页面有 `position:fixed` 的顶栏或侧轨，也不能用 `fullPage`**——它只会把固定元素画在页面顶部一次。还有一条：**滚动驱动的视觉（光的角度、进度、视差）不能用全页图取证**，分段拼接冻结的是不同状态。定位关键局部时，优先「把元素滚进视口后截视口」，而不是用全页图加坐标裁剪。详见 [`case-studies/music-school-proposal/scripts/fullpage.mjs`](case-studies/music-school-proposal/scripts/fullpage.mjs)。
 
 ### 文件结构
 
@@ -148,7 +157,8 @@ ui-design-with-ai/
 ├── examples/
 └── case-studies/
     ├── owner-side/
-    └── shengyi-next-landing/   # 含可拖动的前后对比页 compare.html
+    ├── shengyi-next-landing/   # 含可拖动的前后对比页 compare.html
+    └── music-school-proposal/  # 含可复用的可靠全页截图实现 fullpage.mjs
 ```
 
 仓库根目录就是 Skill 根目录，`SKILL.md` 不再嵌套一层。
@@ -183,7 +193,7 @@ ui-design-with-ai/
 
 ## 我会一直优化
 
-每个实战案例跑完，我都会把暴露的问题**回修进 `SKILL.md` 本身**，而不是只写一份总结——这已经是这个仓库的固定动作。到目前为止回修过的包括：截图管线必须用真实 CSS 视口、评审员的事实性陈述必须抽查复核、整页长图不能直接丢给视觉模型提问。
+每个实战案例跑完，我都会把暴露的问题**回修进 `SKILL.md` 本身**，而不是只写一份总结——这已经是这个仓库的固定动作。到目前为止回修过的包括：截图管线必须用真实 CSS 视口、评审员的事实性陈述必须抽查复核、整页长图不能直接丢给视觉模型提问、以及**全页截图不能用 `fullPage`（device pixels 超过约 16384 会静默产出与页面不对应的图）**。
 
 接下来要补的，都是目前明确标着 `NOT TESTED` 的：
 

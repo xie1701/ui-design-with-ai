@@ -1,0 +1,1180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>青禾艺术 · 「听见」线上成长空间 · 产品提案</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%2308131F'/%3E%3Cpath d='M5 19c3-8 6 5 9-2s6 7 9-3' stroke='%23F2B33D' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --night:#08131F;
+    --night-2:#0E1F31;
+    --night-3:#1C3A52;
+    --night-line:#1C3A52;
+    --dawn:#F2B33D;
+    --dawn-soft:#F7D08A;
+    --voice:#F4F1EA;
+    --voice-dim:#A9B4C2;
+    --resonance:#7FA6C4;
+    --ink-on-dawn:#20180A;
+    --serif:"Songti SC","Noto Serif SC",STSong,serif;
+    --kaiti:"Kaiti SC",KaiTi,STKaiti,"Noto Serif SC",serif;
+    --sans:"PingFang SC","Noto Sans SC","Hiragino Sans GB",system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+    --dawn-angle:205;
+    --rail:0px;
+    --pad:22px;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--night);
+    color:var(--voice);
+    font:17px/1.85 var(--sans);
+    letter-spacing:.01em;
+    overflow-x:hidden;
+  }
+  @media (min-width:768px){ body{font-size:18px;} :root{--pad:40px;} }
+
+  /* ---------- 天光：滚动即天亮 ---------- */
+  .sky{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  .sky .beam{
+    position:absolute;inset:-30%;
+    background:linear-gradient(calc(var(--dawn-angle) * 1deg),
+      rgba(242,179,61,0) 0%,
+      rgba(242,179,61,.05) 13%,
+      rgba(242,179,61,.22) 25%,
+      rgba(242,179,61,.07) 42%,
+      rgba(242,179,61,0) 60%);
+  }
+  .sky .grain{
+    position:absolute;inset:0;opacity:.9;
+    background:
+      radial-gradient(130% 55% at 46% -6%, rgba(127,166,196,.075), transparent 72%),
+      radial-gradient(90% 40% at 8% 88%, rgba(242,179,61,.05), transparent 70%);
+  }
+  /* 纸面颗粒：由脚本生成并注入，不引入任何外部资源 */
+  .sky .grain::after{
+    content:"";position:absolute;inset:0;opacity:.5;
+    background-image:var(--grain);background-repeat:repeat;background-size:128px 128px;
+  }
+
+  /* ---------- 左轨声纹（≥1024） ---------- */
+  .rail{display:none;}
+  @media (min-width:1024px){
+    :root{--rail:88px;}
+    .rail{
+      display:block;position:fixed;left:0;top:0;bottom:0;width:var(--rail);z-index:1;
+      padding:84px 0 40px;
+    }
+    .rail .bars{display:flex;flex-direction:column;justify-content:space-between;height:100%;align-items:flex-start;}
+    .rail .bar{height:2px;border-radius:2px;background:var(--night-3);transition:background .5s linear;}
+    .rail .bar.on{background:var(--dawn);}
+    /* 只有“已填充”还不够：滚到顶部时 88 段全暗，看上去像一块底纹。
+       加一根随滚动下移的琥珀指针，让它从“纹理”变成“仪表”。 */
+    .rail .needle{
+      position:absolute;left:0;width:100%;height:2px;background:var(--dawn);
+      box-shadow:0 0 10px rgba(242,179,61,.6);border-radius:2px;
+    }
+  }
+
+  /* ---------- 顶栏 ---------- */
+  .top{
+    position:sticky;top:0;z-index:5;background:var(--night);
+    border-bottom:1px solid rgba(127,166,196,.14);
+  }
+  .top .inner{
+    display:flex;align-items:center;gap:16px;
+    padding:10px var(--pad);max-width:1180px;margin:0 auto;
+  }
+  .mark{
+    font:600 16px/1 var(--serif);letter-spacing:.14em;color:var(--voice);
+    white-space:nowrap;flex:0 0 auto;
+  }
+  .mark b{color:var(--dawn);font-weight:600;}
+  .chapters{
+    display:flex;gap:2px;margin-left:auto;overflow-x:auto;scrollbar-width:none;
+  }
+  .chapters::-webkit-scrollbar{display:none;}
+  .chapters a{
+    font:16px/1 var(--kaiti);color:var(--voice-dim);text-decoration:none;
+    padding:12px 10px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;
+  }
+  .chapters a[aria-current="true"]{color:var(--ink-on-dawn);background:var(--dawn);border-radius:2px;}
+  .chapters a:hover{color:var(--dawn);}
+  .chapters a[aria-current="true"]:hover{color:var(--ink-on-dawn);}
+  .chapters a:focus-visible,.key:focus-visible,.seg:focus-visible,.nodetab:focus-visible,.srcbtn:focus-visible{
+    outline:2px solid var(--dawn-soft);outline-offset:3px;
+  }
+  .top .progress{display:flex;align-items:flex-end;gap:2px;height:24px;flex:0 0 96px;}
+  .top .progress i{flex:1;background:var(--night-3);border-radius:1px;}
+  .top .progress i.on{background:var(--dawn);}
+  @media (min-width:1024px){ .top .progress{display:none;} }
+  /* 窄屏：七个章节方块在顶栏里放不下（实测 390 下只剩 61px，看上去像一个孤立方块），
+     改为「当前章节 / 总章节」一个指示，方向感留住，也不假装有七个可点目标。 */
+  .chapterNow{display:none;}
+  @media (max-width:1023px){
+    .chapters{display:none;}
+    .chapterNow{display:block;font:16px/1 var(--mono);color:var(--dawn);white-space:nowrap;}
+  }
+  /* 320 宽度下顶栏会差几像素，把品牌与进度条各让一点。
+     进度条宽度必须同时收 gap：56 段之间 55 个 2px 间隙本身就是 110px 的最小宽度，
+     只改 flex-basis 收不下去（实测 flex:0 0 68px 仍渲染成 110px）。 */
+  @media (max-width:419px){
+    .top .inner{gap:8px;padding-left:16px;padding-right:16px;}
+    .mark{letter-spacing:.02em;}
+    .top .progress{flex:0 0 68px;gap:1px;}
+  }
+
+  .skip{
+    position:absolute;left:-9999px;top:0;color:var(--voice);font:16px/1.2 var(--mono);
+    padding:14px 18px;min-height:44px;display:inline-flex;align-items:center;border-radius:2px;
+  }
+  .skip:focus{left:8px;top:8px;z-index:9;background:var(--dawn);color:var(--ink-on-dawn);outline:2px solid var(--dawn-soft);outline-offset:2px;}
+
+  /* ---------- 版心 ---------- */
+  main{position:relative;z-index:2;padding-left:var(--rail);}
+  .wrap{max-width:min(1180px,100% - var(--pad) * 2);margin:0 auto;}
+  .col{max-width:34em;}
+
+  /* ---------- 首屏 ---------- */
+  .hero{padding:16px 0 8px;}
+  /* text-wrap 用 pretty 而非 balance：balance 会把「青禾艺术 ·「听见」线上成长空间 · 产品提案」
+     平均分配到两行，正好从「听见」中间断开（390 实测「听」与「见」分居两行）。
+     pretty 只在末尾做微调，品牌词保持完整。 */
+  .hero h1{
+    font:400 clamp(33px,9vw,62px)/1.36 var(--kaiti);
+    letter-spacing:.06em;margin:0 0 16px;text-wrap:pretty;
+  }
+  .hero h1::after{
+    content:"";display:block;width:74px;height:2px;margin-top:18px;background:var(--dawn);
+  }
+  /* 320 下 9vw 只有 28.8px，被 clamp 抬回 33px，标题挤在 276px 里仍会把「听见」拆开；
+     放开下限到 30px 并去掉字距后品牌词不再断开，且不产生横向溢出。 */
+  @media (max-width:419px){
+    .hero h1{font-size:clamp(30px,9vw,62px);letter-spacing:0;}
+  }
+  .letterhead{font:16px/1.8 var(--mono);color:var(--voice-dim);letter-spacing:.06em;}
+  /* 390 实测原先把日期断成「2026 年 9」/「月」；pretty 会把短尾行收回去。 */
+  .letterhead p{margin:0;text-wrap:pretty;}
+  .letterhead .nb{white-space:nowrap;}
+  .letterhead p + p{margin-top:3px;}
+  /* 390 下「提案人：…｜ 2026 年 9 月」带 .06em 字距时需 350px（容器 346px），
+     会被断成「2026 年 」/「9 月」；收掉字距后 325px 一行放得下。
+     注意：这条必须在上面 .letterhead 基则之后，否则同特异性下被基则盖掉。 */
+  @media (max-width:419px){
+    .letterhead{letter-spacing:0;}
+  }
+  .overture{
+    margin:24px 0 0;padding:16px 20px;
+    background:linear-gradient(90deg, rgba(242,179,61,.10), rgba(242,179,61,0));
+    border-left:2px solid var(--dawn);
+    font:400 clamp(20px,5vw,26px)/1.58 var(--kaiti);letter-spacing:.015em;color:var(--voice);
+    max-width:34em;
+  }
+  .overture p{margin:0;}
+
+  /* ---------- 乐器：按住听一声 ---------- */
+  .inst{margin:20px 0 0;border:1px solid rgba(127,166,196,.22);border-radius:3px;background:var(--night-2);}
+  .inst .cap{
+    display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid rgba(127,166,196,.16);
+  }
+  .tag{
+    font:16px/1 var(--mono);letter-spacing:.08em;color:var(--ink-on-dawn);background:var(--dawn);
+    padding:5px 8px;border-radius:2px;white-space:nowrap;
+  }
+  /* 原先 m4 的「概念演示」用了冷色 .cool，两位独立评审都把它读成“标签颜色不一致 / 像 bug”。
+     语义上的区分没传达出去，诚实标签本身的一致性更重要 —— 统一为琥珀。 */
+  .tag.cool{background:var(--dawn);color:var(--ink-on-dawn);}
+  .inst .cap .lbl{font:16px/1.4 var(--mono);color:var(--voice-dim);letter-spacing:.06em;}
+  #voiceCanvas{display:block;width:100%;height:86px;background:transparent;}
+  @media (min-width:768px){ #voiceCanvas{height:172px;} }
+  .inst .foot{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:14px 16px 16px;border-top:1px solid rgba(127,166,196,.16);}
+  .key{
+    font:600 17px/1 var(--sans);color:var(--ink-on-dawn);background:var(--dawn);
+    border:0;border-radius:2px;padding:18px 26px;min-height:54px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:10px;
+  }
+  .key::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--ink-on-dawn);}
+  .key[aria-pressed="true"]{background:var(--dawn-soft);}
+  .hint{font:16px/1.65 var(--sans);color:var(--voice-dim);margin:0;flex:1 1 220px;}
+
+  /* ---------- 章节 ---------- */
+  .mv{padding:64px 0 10px;border-top:1px solid rgba(127,166,196,.13);margin-top:56px;}
+  .mv:first-of-type{border-top:0;margin-top:34px;}
+  /* 章节声纹刻度：由该章标题文本确定性派生，给长文中后段一个视觉起点 */
+  .chTick{display:block;margin:0 0 14px;color:var(--dawn);opacity:.5;}
+  .chTick svg{display:block;width:96px;height:14px;}
+  @media (min-width:768px){ .chTick{margin-bottom:18px;} .chTick svg{width:132px;height:16px;} }
+  .mv-title{
+    font:400 clamp(25px,6.3vw,39px)/1.5 var(--kaiti);letter-spacing:.06em;margin:0 0 28px;
+    max-width:30em;
+  }
+  .sub{font:400 clamp(20px,4.9vw,26px)/1.5 var(--serif);letter-spacing:.03em;margin:46px 0 18px;color:var(--dawn-soft);}
+  .sub:first-of-type{margin-top:8px;}
+
+  /* ---------- 正文 ---------- */
+  .prose p{margin:0 0 1.05em;max-width:34em;}
+  .prose strong{color:#FFFDF6;font-weight:600;}
+  .prose em{font-style:normal;color:var(--dawn-soft);}
+  .prose ul{list-style:none;margin:0 0 1.3em;padding:0;max-width:34em;}
+  .prose li{position:relative;padding-left:22px;margin:0 0 .72em;}
+  .prose li::before{content:"";position:absolute;left:0;top:.82em;width:12px;height:1px;background:var(--dawn);}
+  .prose .note{
+    margin:0 0 1.35em;padding:18px 20px 18px 22px;
+    background:rgba(242,179,61,.075);border-left:2px solid var(--dawn);border-radius:0 3px 3px 0;
+    font:400 clamp(19px,4.6vw,23px)/1.72 var(--kaiti);letter-spacing:.015em;
+    max-width:34em;
+  }
+  .prose .note p{margin:0;max-width:none;}
+  .prose .aside{
+    margin:0 0 1.35em;padding:16px 0 16px 20px;border-left:1px solid rgba(127,166,196,.34);
+    font:16px/1.8 var(--mono);color:var(--voice-dim);letter-spacing:.03em;max-width:34em;
+  }
+
+  /* ---------- 概念演示外壳 ---------- */
+  .demo{margin:30px 0 34px;border:1px solid rgba(127,166,196,.22);border-radius:3px;background:var(--night-2);}
+  .demo>.cap{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(127,166,196,.16);}
+  .demo>.cap .lbl{font:16px/1.4 var(--mono);color:var(--voice-dim);letter-spacing:.06em;}
+  .demo>.body{padding:18px 16px 22px;}
+  @media (min-width:768px){ .demo>.body{padding:22px 24px 26px;} }
+
+  /* ---------- 四个身份 ---------- */
+  .ledger{display:grid;gap:8px;}
+  .seg{
+    display:grid;grid-template-columns:1fr;gap:8px;width:100%;text-align:left;cursor:pointer;
+    background:transparent;border:1px solid rgba(127,166,196,.2);border-radius:3px;
+    padding:16px;min-height:64px;color:var(--voice);font:inherit;
+  }
+  .seg:hover{border-color:rgba(242,179,61,.5);}
+  .seg[aria-pressed="true"]{border-color:var(--dawn);background:rgba(242,179,61,.08);}
+  .seg .who{font:600 17px/1.4 var(--sans);color:var(--dawn-soft);display:flex;align-items:center;gap:8px;}
+  .seg .who::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--night-3);}
+  .seg[aria-pressed="true"] .who::before{background:var(--dawn);}
+  .seg .what{font:16px/1.72 var(--sans);color:var(--voice);}
+  .seg .what strong{color:#FFFDF6;}
+  @media (min-width:768px){
+    .seg{grid-template-columns:minmax(0,190px) minmax(0,1fr);gap:18px;align-items:baseline;}
+  }
+  .colhead{display:none;}
+  @media (min-width:768px){
+    .colhead{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr);gap:18px;
+      font:16px/1 var(--mono);letter-spacing:.1em;color:var(--voice-dim);padding:0 16px 10px;}
+  }
+  #roleCanvas{display:block;width:100%;height:120px;margin-top:18px;border:1px solid rgba(127,166,196,.18);border-radius:3px;}
+
+  /* ---------- 成长时间轴 ---------- */
+  .axis{margin-top:6px;}
+  .axis .track{
+    display:grid;gap:10px;padding:0;
+  }
+  @media (min-width:768px){
+    .axis .track{
+      display:flex;gap:14px;overflow-x:auto;padding:6px 0 14px;
+      scroll-snap-type:x proximity;
+    }
+  }
+  .axis .track::-webkit-scrollbar{height:6px;}
+  .axis .track::-webkit-scrollbar-thumb{background:rgba(127,166,196,.3);border-radius:3px;}
+  .nodetab{
+    flex:0 0 min(78vw,300px);scroll-snap-align:start;text-align:left;cursor:pointer;
+    background:var(--night);border:1px solid rgba(127,166,196,.2);border-radius:3px;
+    padding:0;color:var(--voice);font:inherit;overflow:hidden;
+    display:grid;grid-template-columns:56px minmax(0,1fr);
+  }
+  .nodetab:hover{border-color:rgba(242,179,61,.45);}
+  .nodetab[aria-pressed="true"]{border-color:var(--dawn);}
+  .nodetab .nlabel{
+    display:flex;align-items:flex-start;justify-content:center;font:16px/1 var(--mono);letter-spacing:.1em;
+    color:var(--voice-dim);padding:14px 0;border-right:1px solid rgba(127,166,196,.16);
+  }
+  .nodetab[aria-pressed="true"] .nlabel{color:var(--ink-on-dawn);background:var(--dawn);border-right-color:var(--dawn);}
+  .nodetab .ntext{display:block;padding:14px 16px;font:16px/1.72 var(--sans);}
+  @media (min-width:768px){
+    .nodetab{display:block;}
+    .nodetab .nlabel{display:block;padding:13px 14px;border-right:0;border-bottom:1px solid rgba(127,166,196,.16);}
+    .nodetab[aria-pressed="true"] .nlabel{border-bottom-color:var(--dawn);}
+  }
+  .nodetab .ntext strong{color:#FFFDF6;}
+  #axisCanvas{display:block;width:100%;height:96px;margin-top:16px;border:1px solid rgba(127,166,196,.18);border-radius:3px;}
+  .record{margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:14px;}
+  .meter{flex:1 1 200px;height:8px;background:var(--night);border:1px solid rgba(127,166,196,.22);border-radius:2px;overflow:hidden;}
+  .meter i{display:block;height:100%;width:0;background:var(--dawn);}
+  .status{font:16px/1.6 var(--mono);color:var(--voice-dim);letter-spacing:.03em;min-width:12em;}
+  .status.done{color:var(--dawn-soft);}
+
+  /* ---------- 编曲 ---------- */
+  .srcs{display:flex;flex-wrap:wrap;gap:10px;}
+  .srcbtn{
+    cursor:pointer;background:var(--night);border:1px solid rgba(127,166,196,.22);border-radius:2px;
+    color:var(--voice);font:16px/1 var(--sans);padding:15px 16px;min-height:50px;
+  }
+  .srcbtn:hover{border-color:rgba(242,179,61,.5);}
+  .srcbtn[aria-pressed="true"]{border-color:var(--dawn);color:var(--ink-on-dawn);background:var(--dawn);}
+  #scoreCanvas{display:block;width:100%;height:150px;margin-top:16px;border:1px solid rgba(127,166,196,.18);border-radius:3px;}
+  #artCanvas{display:block;width:100%;height:190px;margin-top:10px;border:1px solid rgba(127,166,196,.18);border-radius:3px;}
+  .duo{display:grid;gap:10px;}
+  @media (min-width:768px){ .duo{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;} .duo>div:first-child{grid-column:1;} }
+
+  /* ---------- 对照账簿 ---------- */
+  .ledger2{display:grid;gap:10px;}
+  .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:12px;padding:14px 16px;border:1px solid rgba(127,166,196,.18);border-radius:3px;background:var(--night-2);}
+  /* 最后一行是「您」那一行（原文：您对青禾的了解，靠问、靠记、靠感觉）——
+     它是写给读这份提案的人的，而不是写给家长或老师的。把这一行单独标出来，
+     六个一模一样的卡壳就不会读成一张平铺的表。
+     第一版只改了边框透明度（.18 → .42），实测交给视觉模型它根本没看出来——
+     差异太小就不算差异。改成琥珀实心内边 + 更亮的面。用 inset 阴影而不是 border-left，
+     避免这一行的内容相对其他行右移 3px。 */
+  .row2.self{
+    border-color:rgba(242,179,61,.55);
+    background:linear-gradient(90deg, rgba(242,179,61,.11), rgba(242,179,61,0) 64%), var(--night-2);
+    box-shadow:inset 3px 0 0 var(--dawn);
+  }
+  .row2 .was{font:16px/1.7 var(--sans);color:var(--voice-dim);padding-right:12px;border-right:1px solid rgba(127,166,196,.18);}
+  .row2 .now{font:16px/1.7 var(--sans);color:var(--voice);display:flex;gap:8px;align-items:flex-start;}
+  .row2 .now::before{content:"";flex:0 0 auto;width:8px;height:8px;margin-top:.66em;border-radius:50%;background:var(--dawn);}
+  @media (min-width:768px){
+    .row2{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px;padding:16px 18px;}
+    .row2 .was{padding-right:16px;}
+  }
+  /* 对照账簿的列头在手机上必须可见：否则读者分不清哪句是「现在」 */
+  .head2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:12px;
+    font:16px/1 var(--mono);letter-spacing:.08em;color:var(--voice-dim);padding:0 16px 8px;}
+  .head2 span:first-child{padding-right:12px;border-right:1px solid transparent;}
+  @media (min-width:768px){
+    .head2{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px;letter-spacing:.1em;padding:0 18px 8px;}
+  }
+
+  /* ---------- 收尾 ---------- */
+  .close{padding:70px 0 30px;}
+  .close .final{
+    font:400 clamp(21px,5.3vw,30px)/1.7 var(--kaiti);letter-spacing:.015em;
+    padding:24px 0 24px 22px;border-left:2px solid var(--dawn);max-width:34em;margin:0;
+  }
+  .sign{margin-top:46px;font:16px/1.95 var(--mono);color:var(--voice-dim);letter-spacing:.06em;}
+  .sign p{margin:0;}
+  .sign em{font-style:normal;color:var(--voice);}
+  footer{
+    position:relative;z-index:2;padding:0 var(--pad) 56px;margin-left:var(--rail);
+  }
+  footer .inner{max-width:min(1180px,100%);margin:0 auto;}
+  .concept-note{
+    border-top:1px solid rgba(127,166,196,.2);padding-top:18px;
+    font:16px/1.8 var(--sans);color:var(--voice-dim);max-width:44em;
+  }
+  .concept-note b{color:var(--voice);font-weight:600;}
+  [hidden]{display:none !important;}
+</style>
+</head>
+<body>
+<a class="skip" href="#m1">跳到正文</a>
+<div class="sky" aria-hidden="true"><span class="beam"></span><span class="grain"></span></div>
+<div class="rail" aria-hidden="true"><div class="bars" id="railBars"></div><span class="needle" id="railNeedle"></span></div>
+
+<header class="top">
+  <div class="inner">
+    <span class="mark">青禾艺术 · <b>「听见」</b></span>
+    <b class="chapterNow" id="chapterNow" aria-hidden="true">一 / 七</b>
+    <div class="progress" id="topBars" aria-hidden="true"></div>
+    <nav class="chapters" aria-label="章节">
+      <a href="#m1">一</a><a href="#m2">二</a><a href="#m3">三</a><a href="#m4">四</a>
+      <a href="#m5">五</a><a href="#m6">六</a><a href="#m7">七</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <!-- ================= 首屏 ================= -->
+  <section class="hero">
+    <h1><span data-copy="c001">青禾艺术 · 「听见」线上成长空间 · 产品提案</span></h1>
+    <div class="letterhead">
+      <p><span data-copy="c002">致：青禾艺术　李老师</span></p>
+      <p><span data-copy="c003">提案人：脉动（Jerry）　｜　2026 年 9 月</span></p>
+    </div>
+    <blockquote class="overture"><span data-copy="c004">这份提案只讲一件事：<strong>为青禾建一个什么样的线上空间，让青禾这十年的好，第一次真正站出来、被人听见。</strong></span></blockquote>
+
+    <figure class="inst">
+      <figcaption class="cap">
+        <span class="tag">概念演示</span>
+        <span class="lbl">按住，听一声</span>
+      </figcaption>
+      <canvas id="voiceCanvas" aria-hidden="true"></canvas>
+      <div class="foot">
+        <button class="key" id="soundKey" type="button" aria-pressed="false" aria-describedby="keyHint">按住发声</button>
+        <p class="hint" id="keyHint">声音由浏览器在本地合成，不是真实录音，也不上传任何内容。</p>
+      </div>
+    </figure>
+  </section>
+
+  <!-- ================= 一 ================= -->
+  <section class="mv" id="m1">
+    <span class="chTick" aria-hidden="true"><svg viewBox="0 0 96 14" width="96" height="14" aria-hidden="true"><path d="M0.0,3.6L3.6,3.4L7.1,5.3L10.7,1.2L14.2,5.4L17.8,1.8L21.3,5.9L24.9,1.9L28.4,1.0L32.0,4.7L35.6,4.1L39.1,3.3L42.7,2.9L46.2,4.4L49.8,2.2L53.3,1.2L56.9,5.9L60.4,4.4L64.0,1.5L67.6,2.9L71.1,5.0L74.7,4.6L78.2,3.9L81.8,2.4L85.3,2.3L88.9,4.8L92.4,1.2L96.0,1.4L96.0,12.6L92.4,12.8L88.9,9.2L85.3,11.7L81.8,11.6L78.2,10.1L74.7,9.4L71.1,9.0L67.6,11.1L64.0,12.5L60.4,9.6L56.9,8.1L53.3,12.8L49.8,11.8L46.2,9.6L42.7,11.1L39.1,10.7L35.6,9.9L32.0,9.3L28.4,13.0L24.9,12.1L21.3,8.1L17.8,12.2L14.2,8.6L10.7,12.8L7.1,8.7L3.6,10.6L0.0,10.4Z" fill="currentColor"/></svg></span><h2 class="mv-title"><span data-copy="c005">一、青禾缺的不是好，是"没有能替它开口的东西"</span></h2>
+    <div class="prose">
+      <p><span data-copy="c006">李老师，我想先说一句可能有点扎的话：</span></p>
+      <blockquote class="note"><span data-copy="c007"><strong>青禾做得很好，可您的好，全都活在现场和熟人的记忆里。</strong></span></blockquote>
+      <p><span data-copy="c008">您想想今天一个真实的情形——</span></p>
+      <ul>
+        <li><span data-copy="c009">一位老家长想把她朋友介绍到青禾。她能做什么？发几张照片，然后靠嘴说。她说得再好，也传不出您这十年真正的分量；</span></li>
+        <li><span data-copy="c010">一个孩子在这里学了三年。除了"会弹几首曲子"，家长很难说出他到底长成了什么样——那些专注、那些胆量、那些第一次上台前的紧张和之后的骄傲，<strong>发生过，然后就散了</strong>；</span></li>
+        <li><span data-copy="c011">每一位老师每天在教室里做的一切——怎么把一首曲子的味道讲透、怎么陪一个孩子熬过瓶颈——<strong>做完就没了</strong>，没有留下任何东西；</span></li>
+        <li><span data-copy="c012">而一个不认识您的新家长，在网上搜"本地 钢琴"，<strong>搜不到青禾。</strong></span></li>
+      </ul>
+      <p><span data-copy="c013"><strong>这就是青禾今天真正的处境：价值足够，但没有一样东西能自己站出来说话。</strong></span></p>
+      <p><span data-copy="c014">之前梳理的品牌手册里写着一句特别好的话——<strong>「让成长被听见」。</strong> 这句话不只是一句标语。它是青禾真正在做、而外面没有人在做的事。</span></p>
+      <p><span data-copy="c015"><strong>我们要做的，就是把这句话，做成一个摸得到的东西。</strong></span></p>
+    </div>
+  </section>
+
+  <!-- ================= 二 ================= -->
+  <section class="mv" id="m2">
+    <span class="chTick" aria-hidden="true"><svg viewBox="0 0 96 14" width="96" height="14" aria-hidden="true"><path d="M0.0,1.4L3.6,2.4L7.1,1.0L10.7,2.5L14.2,2.4L17.8,2.5L21.3,3.9L24.9,1.7L28.4,2.8L32.0,4.9L35.6,4.1L39.1,4.2L42.7,1.2L46.2,3.5L49.8,2.4L53.3,5.3L56.9,2.5L60.4,4.5L64.0,1.6L67.6,2.8L71.1,4.5L74.7,4.0L78.2,5.4L81.8,3.5L85.3,2.6L88.9,3.8L92.4,3.3L96.0,3.4L96.0,10.6L92.4,10.7L88.9,10.2L85.3,11.4L81.8,10.5L78.2,8.6L74.7,10.0L71.1,9.5L67.6,11.2L64.0,12.4L60.4,9.5L56.9,11.5L53.3,8.7L49.8,11.6L46.2,10.5L42.7,12.8L39.1,9.8L35.6,9.9L32.0,9.1L28.4,11.2L24.9,12.3L21.3,10.1L17.8,11.6L14.2,11.6L10.7,11.5L7.1,13.0L3.6,11.6L0.0,12.6Z" fill="currentColor"/></svg></span><h2 class="mv-title"><span data-copy="c016">二、这个东西是什么：青禾自己的一个"家"</span></h2>
+    <div class="prose">
+      <p><span data-copy="c017">不是一个管理系统。</span></p>
+      <p><span data-copy="c018"><strong>是青禾在网上的一个空间</strong>——打开就进来，挂在青禾的公众号下面，一条链接可以发给任何一位家长、任何一个正在打听"本地哪里学琴好"的陌生人。</span></p>
+      <p><span data-copy="c019">它有三个身份，各得其所：</span></p>
+    </div>
+
+    <figure class="demo">
+      <figcaption class="cap">
+        <span class="tag">概念演示</span>
+        <span class="lbl">四个身份，四种视野</span>
+      </figcaption>
+      <div class="body">
+        <div class="colhead"><span><span data-copy="c020">谁进来</span></span><span><span data-copy="c021">看到什么</span></span></div>
+        <div class="ledger" id="roles" role="group" aria-label="四个身份，四种视野">
+          <button class="seg" type="button" aria-pressed="true" data-i="0">
+            <span class="who"><span data-copy="c022"><strong>一位新家长</strong></span></span><span class="what"><span data-copy="c023">一屏之内看懂：青禾是个什么地方、这里教什么、这里的老师是谁、这里的孩子长成什么样</span></span>
+          </button>
+          <button class="seg" type="button" aria-pressed="false" data-i="1">
+            <span class="who"><span data-copy="c024"><strong>一位在读家长</strong></span></span><span class="what"><span data-copy="c025">自己孩子的成长：每一节课老师说了什么、孩子在练什么、还剩多少课时、接下来有什么活动</span></span>
+          </button>
+          <button class="seg" type="button" aria-pressed="false" data-i="2">
+            <span class="who"><span data-copy="c026"><strong>一位老师</strong></span></span><span class="what"><span data-copy="c027">自己的工作台，也是自己的名片：课表、点评、学生的进步、自己的教学理念</span></span>
+          </button>
+          <button class="seg" type="button" aria-pressed="false" data-i="3">
+            <span class="who"><span data-copy="c028"><strong>您</strong></span></span><span class="what"><span data-copy="c029">一眼看清青禾的运转：多少孩子在读、课时消耗、琴房用没用起来、这学期的新学员从哪来</span></span>
+          </button>
+        </div>
+        <canvas id="roleCanvas" aria-hidden="true"></canvas>
+      </div>
+    </figure>
+
+    <div class="prose">
+      <p><span data-copy="c030"><strong>它不是给青禾装一个工具，是给青禾建一个家。</strong> 工具用完就放下，家是越住越厚、谁都搬不走的。</span></p>
+    </div>
+  </section>
+
+  <!-- ================= 三 ================= -->
+  <section class="mv" id="m3">
+    <span class="chTick" aria-hidden="true"><svg viewBox="0 0 96 14" width="96" height="14" aria-hidden="true"><path d="M0.0,4.1L3.6,3.3L7.1,2.4L10.7,2.0L14.2,3.1L17.8,1.2L21.3,5.3L24.9,2.3L28.4,5.3L32.0,5.5L35.6,3.0L39.1,3.9L42.7,2.1L46.2,5.7L49.8,4.8L53.3,3.7L56.9,5.8L60.4,5.3L64.0,5.5L67.6,5.1L71.1,4.7L74.7,5.5L78.2,5.2L81.8,4.4L85.3,1.4L88.9,4.0L92.4,5.8L96.0,3.1L96.0,10.9L92.4,8.2L88.9,9.9L85.3,12.6L81.8,9.6L78.2,8.8L74.7,8.5L71.1,9.3L67.6,8.9L64.0,8.5L60.4,8.7L56.9,8.2L53.3,10.3L49.8,9.2L46.2,8.3L42.7,11.9L39.1,10.1L35.6,11.0L32.0,8.6L28.4,8.7L24.9,11.7L21.3,8.7L17.8,12.8L14.2,10.9L10.7,12.0L7.1,11.6L3.6,10.7L0.0,9.9Z" fill="currentColor"/></svg></span><h2 class="mv-title"><span data-copy="c031">三、走一遍，您就知道它长什么样</span></h2>
+
+    <h3 class="sub"><span data-copy="c032">3.1 新家长第一次进来（公开页面，不用登录）</span></h3>
+    <div class="prose">
+      <p><span data-copy="c033">开场就是青禾的气质：深蓝的底、一束朝阳的黄，青禾的标志，和那句话——<strong>「从音乐出发，建立一生的感受力与表达力」</strong>。</span></p>
+      <p><span data-copy="c034">往下走，是：</span></p>
+      <ul>
+        <li><span data-copy="c035"><strong>青禾是个什么样的地方</strong>——不是"钢琴培训班"，是以钢琴为入口的综合艺术浸润空间，空间本身就是艺术的体现。孩子在这里不是来上课的，是来生长的；</span></li>
+        <li><span data-copy="c036"><strong>这里的老师</strong>——每位老师一个页面：她怎么理解音乐、她擅长带什么样的孩子、她写的教学心得。新家长在这里先认识人，再决定要不要来；</span></li>
+        <li><span data-copy="c037"><strong>这里的孩子</strong>——历年学员的舞台、演出回顾、考级与比赛的成果、孩子们自己说的话。<strong>十年攒下的每一次登台，第一次被完整地摆在这里</strong>；</span></li>
+        <li><span data-copy="c038"><strong>这里的活动</strong>——音乐会、沙龙、公开课、游学，正在报名的活动一眼可见。</span></li>
+      </ul>
+      <p><span data-copy="c039"><strong>这一屏，是青禾自己的存在证明。</strong> 从此谁再问"青禾怎么样"，答案是：<strong>您自己看。</strong></span></p>
+    </div>
+
+    <h3 class="sub"><span data-copy="c040">3.2 一位在读家长和孩子进来（这是整个空间的心脏）</span></h3>
+    <div class="prose">
+      <p><span data-copy="c041"><strong>孩子的成长时间线</strong>——像一条只属于他的时间轴，从入学那天开始：</span></p>
+    </div>
+
+    <figure class="demo">
+      <figcaption class="cap">
+        <span class="tag">概念演示</span>
+        <span class="lbl">成长时间轴 · 选一段，看它的声纹</span>
+      </figcaption>
+      <div class="body">
+        <div class="axis">
+          <div class="track" id="axisTrack" role="group" aria-label="成长时间轴上的四段">
+            <button class="nodetab" type="button" aria-pressed="true" data-i="0">
+              <span class="nlabel">01</span><span class="ntext"><span data-copy="c042">每节课后，老师的点评和嘱咐，一字一句留在这里；</span></span>
+            </button>
+            <button class="nodetab" type="button" aria-pressed="false" data-i="1">
+              <span class="nlabel">02</span><span class="ntext"><span data-copy="c043">老师布置的练习，孩子完成得怎么样；</span></span>
+            </button>
+            <button class="nodetab" type="button" aria-pressed="false" data-i="2">
+              <span class="nlabel">03</span><span class="ntext"><span data-copy="c044">孩子在家练琴的视频，传上来，老师点评，班里的同伴可以点赞；</span></span>
+            </button>
+            <button class="nodetab" type="button" aria-pressed="false" data-i="3">
+              <span class="nlabel">04</span><span class="ntext"><span data-copy="c045"><strong>每一节课后，孩子自己对着手机说三十秒</strong>：「我今天学会了什么，最难的是哪里」——AI 帮它转成文字，存进这条时间轴。</span></span>
+            </button>
+          </div>
+          <canvas id="axisCanvas" aria-hidden="true"></canvas>
+          <div class="record">
+            <button class="key" id="recKey" type="button" aria-pressed="false">按住三秒</button>
+            <div class="meter" aria-hidden="true"><i id="recBar"></i></div>
+            <p class="status" id="recStatus" role="status" aria-live="polite">代替孩子课后的三十秒</p>
+          </div>
+        </div>
+      </div>
+    </figure>
+
+    <div class="prose">
+      <p><span data-copy="c046">一年后，家长往回翻这条线，看到的不再是"上了多少节课"，而是<strong>一个孩子三年的声音、三个版本的他</strong>。</span></p>
+      <blockquote class="note"><span data-copy="c047">我们把这个叫做<strong>「声音成长日记」</strong>：青禾 slogan 的字面实现——<strong>孩子的成长，第一次被听见。</strong></span></blockquote>
+      <p><span data-copy="c048"><strong>课时与费用，清清楚楚</strong>：买了什么套餐、还剩多少节课、大约什么时候会用完、什么时候该续费。家长再也不用猜、不用问、不用记账。</span></p>
+      <p><span data-copy="c049"><strong>活动报名</strong>：演出、公开课、小班课、游学——看介绍、看名额、一键报名。</span></p>
+      <p><span data-copy="c050"><strong>孩子的成果墙</strong>：考级证书、比赛奖项、演出经历，一直在那里，可以一键生成一张带青禾名字的分享卡片——<strong>家长每一次晒孩子，青禾就多一次被看见。</strong></span></p>
+    </div>
+
+    <h3 class="sub"><span data-copy="c051">3.3 一位老师进来</span></h3>
+    <div class="prose">
+      <ul>
+        <li><span data-copy="c052"><strong>我什么时候有空</strong>：老师把自己的可用时段放出来，学生约、机构排，一目了然；</span></li>
+        <li><span data-copy="c053"><strong>今天这节课</strong>：讲评、作业、学生的状态，随手记下，自动进学生的成长档案；</span></li>
+        <li><span data-copy="c054"><strong>我上了多少课、带了哪些孩子</strong>：系统自动累计——<strong>这份记录，将来就是课时与课酬的依据，不用再靠微信里翻聊天记录、也不用再跟人对不上账</strong>；</span></li>
+        <li><span data-copy="c055"><strong>我是谁</strong>：老师可以写自己的教育理念、教学心得、对曲目的理解，长在青禾的空间里。</span></li>
+      </ul>
+      <p><span data-copy="c056">这一块我想特别说一句：<strong>老师在这里得到的是展示和被记住，青禾得到的是"这些内容留在青禾"。</strong> 这不是从谁手里拿走什么，是给每一位老师一方更有分量的舞台——<strong>是邀请，不是要求。</strong></span></p>
+    </div>
+
+    <h3 class="sub"><span data-copy="c057">3.4 您进来</span></h3>
+    <div class="prose">
+      <ul>
+        <li><span data-copy="c058">多少孩子在读、这个月消耗了多少课时、谁快续费了；</span></li>
+        <li><span data-copy="c059"><strong>每一架钢琴、每一间琴房，什么时候空着、什么时候在用</strong>——学生不再扎堆到没琴可弹；</span></li>
+        <li><span data-copy="c060">活动发出去，谁报了名、谁转发了、带来了多少人；</span></li>
+        <li><span data-copy="c061">这个月的新孩子，是从哪里来的。</span></li>
+      </ul>
+      <p><span data-copy="c062"><strong>青禾第一次拥有属于自己的经营数字</strong>——不再靠记忆和感觉做决定。</span></p>
+    </div>
+  </section>
+
+  <!-- ================= 四 ================= -->
+  <section class="mv" id="m4">
+    <span class="chTick" aria-hidden="true"><svg viewBox="0 0 96 14" width="96" height="14" aria-hidden="true"><path d="M0.0,4.9L3.6,1.8L7.1,4.0L10.7,5.6L14.2,2.2L17.8,2.9L21.3,5.5L24.9,2.6L28.4,1.5L32.0,3.8L35.6,1.4L39.1,4.1L42.7,2.6L46.2,3.5L49.8,4.3L53.3,3.7L56.9,5.4L60.4,4.3L64.0,2.1L67.6,5.2L71.1,5.4L74.7,2.2L78.2,5.7L81.8,4.2L85.3,3.7L88.9,1.6L92.4,1.9L96.0,3.1L96.0,10.9L92.4,12.1L88.9,12.4L85.3,10.3L81.8,9.8L78.2,8.3L74.7,11.8L71.1,8.6L67.6,8.8L64.0,11.9L60.4,9.7L56.9,8.6L53.3,10.3L49.8,9.7L46.2,10.5L42.7,11.4L39.1,9.9L35.6,12.6L32.0,10.2L28.4,12.5L24.9,11.4L21.3,8.5L17.8,11.1L14.2,11.8L10.7,8.4L7.1,10.0L3.6,12.2L0.0,9.1Z" fill="currentColor"/></svg></span><h2 class="mv-title"><span data-copy="c063">四、两件别的地方没有的东西</span></h2>
+    <div class="prose">
+      <p><span data-copy="c064">这两件，是青禾和所有琴行真正的分水岭。</span></p>
+      <p class="aside"><span data-copy="c065"><strong>第一件：声音成长日记。</strong></span></p>
+      <p><span data-copy="c066">孩子每节课后说的那三十秒，一年、三年、五年地攒下来，是一条完整的成长声轨。家长听得见、孩子自己听得见、您也听得见。</span></p>
+      <p><span data-copy="c067"><strong>别的琴行能给孩子上一节课，但给不了孩子一个"被听见的成长"。</strong> 这是您和所有同行之间最难被追赶的一段距离。</span></p>
+      <p class="aside"><span data-copy="c068"><strong>第二件：AI 音乐创作。</strong></span></p>
+      <p><span data-copy="c069">孩子哼一段自己想到的旋律，AI 帮他编成一首完整的曲子；他用几句话描述今天的心情，就有一段音乐替他说话；拍几张照片——比如那天的天空、那只猫、那场雨——AI 把它们变成一首曲子，和一幅画。</span></p>
+    </div>
+
+    <figure class="demo">
+      <figcaption class="cap">
+        <span class="tag cool">概念演示</span>
+        <span class="lbl">AI 音乐创作 · 三种起点</span>
+      </figcaption>
+      <div class="body">
+        <div class="srcs" id="srcs" role="group" aria-label="选择一种创作起点">
+          <button class="srcbtn" type="button" aria-pressed="true" data-i="0">哼一段旋律</button>
+          <button class="srcbtn" type="button" aria-pressed="false" data-i="1">描述今天的心情</button>
+          <button class="srcbtn" type="button" aria-pressed="false" data-i="2">几张照片</button>
+        </div>
+        <div class="duo">
+          <div>
+            <canvas id="scoreCanvas" aria-hidden="true"></canvas>
+          </div>
+          <div>
+            <canvas id="artCanvas" aria-hidden="true"></canvas>
+          </div>
+        </div>
+      </div>
+    </figure>
+
+    <div class="prose">
+      <p><span data-copy="c070"><strong>一个孩子从"被教琴的人"，变成"会用音乐表达自己的人"。</strong> 那一刻，他爱上音乐的这件事，才真正发生。</span></p>
+      <p><span data-copy="c071">这些曲子会留在他的成长档案里，将来可以办一场<strong>「孩子的原创作品音乐会」</strong>——一场全新的活动、全新的内容、全新的故事。<strong>青禾的孩子，会创作。</strong></span></p>
+    </div>
+  </section>
+
+  <!-- ================= 五 ================= -->
+  <section class="mv" id="m5">
+    <span class="chTick" aria-hidden="true"><svg viewBox="0 0 96 14" width="96" height="14" aria-hidden="true"><path d="M0.0,1.9L3.6,4.6L7.1,1.1L10.7,1.4L14.2,5.0L17.8,4.9L21.3,4.1L24.9,5.8L28.4,5.4L32.0,3.6L35.6,2.5L39.1,5.4L42.7,3.5L46.2,4.1L49.8,4.5L53.3,4.6L56.9,5.8L60.4,5.3L64.0,1.8L67.6,1.1L71.1,3.7L74.7,5.4L78.2,2.9L81.8,3.2L85.3,3.1L88.9,2.7L92.4,5.0L96.0,5.8L96.0,8.2L92.4,9.0L88.9,11.3L85.3,10.9L81.8,10.8L78.2,11.1L74.7,8.6L71.1,10.3L67.6,12.9L64.0,12.2L60.4,8.7L56.9,8.2L53.3,9.4L49.8,9.5L46.2,9.9L42.7,10.5L39.1,8.6L35.6,11.5L32.0,10.4L28.4,8.6L24.9,8.2L21.3,9.9L17.8,9.1L14.2,9.0L10.7,12.6L7.1,12.9L3.6,9.4L0.0,12.1Z" fill="currentColor"/></svg></span><h2 class="mv-title"><span data-copy="c072">五、有了它，青禾会变成什么样</span></h2>
+    <div class="head2"><span><span data-copy="c073">现在</span></span><span><span data-copy="c074">有了它之后</span></span></div>
+    <div class="ledger2">
+      <div class="row2"><span class="was"><span data-copy="c075">新家长搜不到青禾，只能靠熟人介绍，这条路有顶</span></span><span class="now"><span data-copy="c076">一条链接能发给任何人，青禾自己站得住、经得起查</span></span></div>
+      <div class="row2"><span class="was"><span data-copy="c077">家长只知道"孩子会弹几首曲子"，感觉不到成长</span></span><span class="now"><span data-copy="c078">成长看得见、听得见、翻得回去——家长自己就成了青禾的讲述者</span></span></div>
+      <div class="row2"><span class="was"><span data-copy="c079">家长交了几十节课的钱，心里却不是完全清楚</span></span><span class="now"><span data-copy="c080">课时、余额、消耗、续费，全程透明，投诉的根被掐掉</span></span></div>
+      <div class="row2"><span class="was"><span data-copy="c081">老师做的事，做完就散了</span></span><span class="now"><span data-copy="c082">每节课都在给青禾攒资产，也给自己攒口碑</span></span></div>
+      <div class="row2"><span class="was"><span data-copy="c083">琴房、课堂、老师的档期靠口头协调</span></span><span class="now"><span data-copy="c084">谁有空、哪间空着，一屏看清，摩擦从源头减少</span></span></div>
+      <div class="row2 self"><span class="was"><span data-copy="c085">您对青禾的了解，靠问、靠记、靠感觉</span></span><span class="now"><span data-copy="c086">青禾第一次有自己的经营数字</span></span></div>
+    </div>
+    <div class="prose" style="margin-top:30px">
+      <p><span data-copy="c087"><strong>再说透一点</strong>：这件事表面上让家长更方便、让您更省心。但它真正给青禾的，是<strong>解释权</strong>——</span></p>
+      <blockquote class="note"><span data-copy="c088">从今往后，家长了解青禾，是从青禾自己这里了解，而不是从别人的转述里、从别人的印象里。</span></blockquote>
+      <p><span data-copy="c089"><strong>一个机构有没有自己的叙事，决定它在别人嘴里是什么样子。</strong> 这件事，越早做，攒得越厚。</span></p>
+    </div>
+  </section>
+
+  <!-- ================= 六 ================= -->
+  <section class="mv" id="m6">
+    <span class="chTick" aria-hidden="true"><svg viewBox="0 0 96 14" width="96" height="14" aria-hidden="true"><path d="M0.0,1.6L3.6,2.6L7.1,4.3L10.7,4.4L14.2,3.1L17.8,5.9L21.3,2.2L24.9,2.8L28.4,5.1L32.0,2.5L35.6,4.0L39.1,5.4L42.7,3.6L46.2,2.7L49.8,1.0L53.3,1.5L56.9,3.9L60.4,2.0L64.0,4.6L67.6,1.2L71.1,5.5L74.7,6.0L78.2,1.9L81.8,2.7L85.3,5.9L88.9,5.7L92.4,1.8L96.0,1.5L96.0,12.6L92.4,12.2L88.9,8.3L85.3,8.1L81.8,11.3L78.2,12.1L74.7,8.0L71.1,8.5L67.6,12.8L64.0,9.4L60.4,12.0L56.9,10.1L53.3,12.5L49.8,13.0L46.2,11.3L42.7,10.4L39.1,8.6L35.6,10.0L32.0,11.5L28.4,8.9L24.9,11.2L21.3,11.8L17.8,8.1L14.2,10.9L10.7,9.6L7.1,9.7L3.6,11.4L0.0,12.4Z" fill="currentColor"/></svg></span><h2 class="mv-title"><span data-copy="c090">六、为什么不是去买一套"琴行管理系统"</span></h2>
+    <div class="prose">
+      <p><span data-copy="c091">市面上确实有现成的管理系统：约课、排课、记课时，一年几百块。</span></p>
+      <p><span data-copy="c092">但它们有个共同点：<strong>装上以后，青禾还是青禾，系统还是那个白牌系统。</strong> 它不认识您的品牌，不承载您的理念，不替您讲故事——它只是一个更整齐的表格。</span></p>
+      <p><span data-copy="c093"><strong>我们要做的，是长在青禾身上的东西：</strong></span></p>
+      <ul>
+        <li><span data-copy="c094">从颜色、标志、语气到每一屏的内容，都是青禾，不是任何别人；</span></li>
+        <li><span data-copy="c095">内容、数据、域名、成长档案，<strong>全部归青禾所有</strong>——哪天您想自己接手，它一直在那儿，谁也拿不走；</span></li>
+        <li><span data-copy="c096">它不是"装修一遍就完了"，它跟着青禾一起长——今年是孩子的声音日记，明年是他们的原创作品，后年是青禾的十年展。</span></li>
+      </ul>
+      <p><span data-copy="c097"><strong>一句话：管理系统是在别人的模子里装青禾，我们是在给青禾做它自己的那一件。</strong></span></p>
+    </div>
+  </section>
+
+  <!-- ================= 七 ================= -->
+  <section class="mv" id="m7">
+    <span class="chTick" aria-hidden="true"><svg viewBox="0 0 96 14" width="96" height="14" aria-hidden="true"><path d="M0.0,4.4L3.6,4.2L7.1,4.6L10.7,5.1L14.2,5.1L17.8,5.8L21.3,3.9L24.9,4.3L28.4,5.6L32.0,4.8L35.6,4.9L39.1,2.4L42.7,5.3L46.2,4.3L49.8,4.0L53.3,4.9L56.9,5.3L60.4,5.2L64.0,4.1L67.6,1.7L71.1,1.6L74.7,4.5L78.2,3.8L81.8,4.3L85.3,4.4L88.9,5.7L92.4,4.2L96.0,5.6L96.0,8.4L92.4,9.8L88.9,8.3L85.3,9.6L81.8,9.7L78.2,10.2L74.7,9.6L71.1,12.4L67.6,12.3L64.0,9.9L60.4,8.8L56.9,8.7L53.3,9.1L49.8,10.0L46.2,9.7L42.7,8.7L39.1,11.6L35.6,9.1L32.0,9.2L28.4,8.4L24.9,9.7L21.3,10.1L17.8,8.2L14.2,8.9L10.7,8.9L7.1,9.4L3.6,9.8L0.0,9.6Z" fill="currentColor"/></svg></span><h2 class="mv-title"><span data-copy="c098">七、下一步，就一个动作</span></h2>
+    <div class="prose">
+      <p><span data-copy="c099">李老师，这件事最不缺的就是我们想得多周全。它缺的是一次<strong>坐下来一起翻一翻青禾的家底</strong>——</span></p>
+      <p><span data-copy="c100">您那些老照片、演出视频、孩子说过的话、您自己想讲的理念，我们花一个下午过一遍，就能把第一屏的内容定下来。</span></p>
+    </div>
+    <div class="close">
+      <blockquote class="final"><span data-copy="c101"><strong>青禾做了十年，最好的东西一直没被摆出来。这一次，我们把它摆出来——摆在网上，摆给全城正在找钢琴课的家长看，也摆给那些您想够到的家庭看。</strong></span></blockquote>
+      <div class="sign"><p><span data-copy="c102"><em>脉动（Jerry）　138 0000 0000</em></span></p></div>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <div class="inner">
+    <p class="concept-note">
+      <b>关于这一页：</b>本页把一份文字提案做成了可以走一遍的东西。页内所有互动——发声、时间轴、编曲——都是<b>概念演示</b>，
+      由浏览器在本地合成，用于说明「听见」这个空间打算怎么做；它们不对应任何已上线的功能，也不采集、不上传任何内容。
+      文案与提案原文一致。
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var root = document.documentElement;
+
+  /* ---------- 确定性伪随机：同一段文字永远得到同一条声纹 ---------- */
+  (function grain(){
+    /* 稀疏颗粒：大部分像素透明，PNG 压缩友好，视觉上是胶片频粒而非噪声 */
+    var N = 128;
+    var c = document.createElement("canvas"); c.width = N; c.height = N;
+    var g = c.getContext("2d"), img = g.createImageData(N,N), d = img.data;
+    var r = rng(20260921);
+    for (var i=0;i<d.length;i+=4){
+      if (r() < 0.035){
+        d[i]=244; d[i+1]=241; d[i+2]=234; d[i+3]= 60 + Math.floor(r()*90);
+      }
+    }
+    g.putImageData(img,0,0);
+    root.style.setProperty("--grain", "url(" + c.toDataURL() + ")");
+  })();
+  function hashSeed(str){
+    var h = 2166136261 >>> 0;
+    for (var i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    return h >>> 0;
+  }
+  function rng(seed){
+    var s = seed >>> 0;
+    return function(){ s ^= s<<13; s>>>=0; s ^= s>>>17; s ^= s<<5; s>>>=0; return s/4294967296; };
+  }
+  function barsFor(text, n){
+    var r = rng(hashSeed(text)), out = [], prev = 0.55;
+    for (var i=0;i<n;i++){
+      var v = r();
+      prev = prev*0.52 + v*0.48;               /* 相邻相关，像真实波形 */
+      var env = Math.sin(Math.PI * (i/(n-1))); /* 两端收敛，中间饱满 */
+      out.push(Math.max(0.1, Math.min(1, prev*(0.45+0.75*env))));
+    }
+    return out;
+  }
+
+  /* ---------- 声纹画布 ---------- */
+  function fitCanvas(cv){
+    var r = cv.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio||1, 2);
+    cv.width = Math.max(1, Math.round(r.width*dpr));
+    cv.height = Math.max(1, Math.round(r.height*dpr));
+    var g = cv.getContext("2d");
+    g.setTransform(dpr,0,0,dpr,0,0);
+    return g;
+  }
+  function css(v){ return getComputedStyle(root).getPropertyValue(v).trim(); }
+
+  /* 声纹：连续包络，而不是柱状均衡器——更像一段声音本身 */
+  function drawWave(cv, data, opts){
+    opts = opts || {};
+    var g = fitCanvas(cv);
+    var w = cv.getBoundingClientRect().width, h = cv.getBoundingClientRect().height;
+    g.clearRect(0,0,w,h);
+    var n = data.length, mid = h/2, amp = h*0.45;
+    var upto = (opts.upto == null) ? n-1 : Math.max(1, Math.min(n-1, opts.upto));
+    function envelope(from, to){
+      g.beginPath();
+      g.moveTo(0, mid);
+      for (var i=from;i<=to;i++) g.lineTo(i*(w/(n-1)), mid - data[i]*amp);
+      for (var j=to;j>=from;j--) g.lineTo(j*(w/(n-1)), mid + data[j]*amp);
+      g.closePath();
+    }
+    envelope(0, n-1);
+    g.fillStyle = "rgba(127,166,196,.17)";
+    g.fill();
+    envelope(0, upto);
+    var grd = g.createLinearGradient(0,0,w,0);
+    grd.addColorStop(0, opts.color || css("--dawn"));
+    grd.addColorStop(1, opts.color2 || css("--dawn-soft"));
+    g.fillStyle = grd;
+    g.fill();
+    g.strokeStyle = "rgba(244,241,234,.16)";
+    g.lineWidth = 1;
+    g.beginPath(); g.moveTo(0, mid); g.lineTo(w, mid); g.stroke();
+  }
+
+  /* ---------- Web Audio ---------- */
+  var actx = null, master = null, analyser = null, live = false;
+  function audio(){
+    if (actx) return actx;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    actx = new AC();
+    master = actx.createGain(); master.gain.value = 0.75;
+    /* 钢琴一个音就有 12 个振荡器，一段 16 音旋律会重叠；
+       用压缩器把叠加后的峰值压住，避免削顶失真。 */
+    var comp = actx.createDynamicsCompressor();
+    comp.threshold.value = -14; comp.knee.value = 24; comp.ratio.value = 3.2;
+    comp.attack.value = 0.004; comp.release.value = 0.22;
+    analyser = actx.createAnalyser(); analyser.fftSize = 1024; analyser.smoothingTimeConstant = 0.72;
+    master.connect(comp); comp.connect(analyser); analyser.connect(actx.destination);
+    return actx;
+  }
+
+  /* ---------- 钢琴音色 ----------
+     页面必须单文件、零外部请求，所以不能用采样。用加法合成现场造钢琴。
+     让它像钢琴的是三件事，不是“选个波形”：
+       1) 泛音是**非谐**的： f_n = n·f0·√(1 + B·n²)，B≈0.0006 —— 真实钢琴弦有刚度，
+          高次泛音比整数倍略高，这正是“金属感”的来源；纯整数倍叠出来是风琴。
+       2) **高次泛音先死**：每个分音的衰减时长随次数递减，所以音头亮、尾巴温。
+       3) **击弦瞬态**：开头 6ms 的高通噪声当槌子，缺了它就像弦被抚而不是被敲。
+     另外同音用两根微微失谐的弦（±0.16%）制造钢琴特有的“拍音”。
+     低音延音长、高音短，按频率取。 */
+  var P_N     = [1, 2, 3, 4, 5, 6, 8, 10];
+  var P_GAIN  = [1, .46, .28, .17, .11, .075, .05, .032];
+  function pianoDecay(freq){ return Math.max(0.5, Math.min(3.4, 2.6 * Math.pow(261.63 / freq, 0.45))); }
+  function note(freq, at, dur, gain){
+    if (!actx) return;
+    var t = actx.currentTime + at;
+    var out = actx.createGain();
+    out.gain.value = gain == null ? 0.18 : gain;
+    out.connect(master);
+
+    /* 击弦瞬态 */
+    var n = Math.ceil(actx.sampleRate * 0.006);
+    var buf = actx.createBuffer(1, n, actx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = (Math.random()*2 - 1) * Math.pow(1 - i/n, 2.2);
+    var ns = actx.createBufferSource(); ns.buffer = buf;
+    var nf = actx.createBiquadFilter(); nf.type = "highpass"; nf.frequency.value = 1500;
+    var ng = actx.createGain();
+    ng.gain.setValueAtTime(0.0001, t);
+    ng.gain.linearRampToValueAtTime(0.14, t + 0.0015);
+    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+    ns.connect(nf); nf.connect(ng); ng.connect(out);
+    ns.start(t); ns.stop(t + 0.06);
+
+    /* 弦：非谐泛音 + 高阶先衰减 + 双弦失谐 */
+    var B = 0.0006;
+    var natural = pianoDecay(freq);
+    var life = Math.min(natural, Math.max((dur || 0.6) * 1.6, 0.45));
+    for (var k = 0; k < P_N.length; k++){
+      var m = P_N[k];
+      var f = freq * m * Math.sqrt(1 + B * m * m);
+      if (f > actx.sampleRate / 2 - 600) continue;
+      var pg = actx.createGain();
+      var pk = life / (1 + (m - 1) * 0.42);          /* 高次泛音衰减更快 */
+      pg.gain.setValueAtTime(0.0001, t);
+      pg.gain.linearRampToValueAtTime(P_GAIN[k], t + 0.003 + k * 0.0011);
+      pg.gain.exponentialRampToValueAtTime(0.0001, t + pk);
+      for (var s = 0; s < 2; s++){
+        var o = actx.createOscillator();
+        o.type = "sine";
+        o.frequency.value = f * (s ? 1.0016 : 0.9984);
+        var og = actx.createGain(); og.gain.value = s ? 0.42 : 1;
+        o.connect(og); og.connect(pg);
+        o.start(t); o.stop(t + pk + 0.08);
+      }
+      pg.connect(out);
+    }
+  }
+  var PENT = [0,2,4,7,9,12,14,16,19,21,24];
+  function hz(semi){ return 261.63 * Math.pow(2, semi/12); }
+
+  /* ---------- 左轨 / 顶栏 声纹 ---------- */
+  var RAIL_N = 88, TOP_N = 56;
+  var railBars = document.getElementById("railBars");
+  var topBars = document.getElementById("topBars");
+  var railData = barsFor("听见 青禾艺术 让成长被听见", RAIL_N);
+  var topData = barsFor("听见 青禾艺术 让成长被听见", TOP_N);
+  railData.forEach(function(v){
+    var d = document.createElement("span"); d.className="bar";
+    d.style.width = (18 + v*46).toFixed(1) + "px"; railBars.appendChild(d);
+  });
+  topData.forEach(function(v){
+    var d = document.createElement("i"); d.style.height = (18 + v*80).toFixed(0) + "%"; topBars.appendChild(d);
+  });
+  var railEls = railBars.children, topEls = topBars.children;
+  var railNeedle = document.getElementById("railNeedle");
+
+  /* ---------- 滚动驱动 ---------- */
+  var ticking = false;
+  function onScroll(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      ticking = false;
+      var doc = document.documentElement;
+      var max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      var p = Math.min(1, Math.max(0, (window.scrollY||doc.scrollTop)/max));
+      if (!reduce.matches){
+        root.style.setProperty("--dawn-angle", (205 - 48*p).toFixed(2));
+      } else {
+        root.style.setProperty("--dawn-angle", "181");
+      }
+      var rn = Math.round(p*RAIL_N), tn = Math.round(p*TOP_N);
+      for (var i=0;i<RAIL_N;i++) railEls[i].classList.toggle("on", i<rn);
+      for (var j=0;j<TOP_N;j++) topEls[j].classList.toggle("on", j<tn);
+      if (railNeedle) railNeedle.style.top = (p*100).toFixed(2) + "%";
+    });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  window.addEventListener("resize", onScroll);
+
+  /* ---------- 章节 scroll-spy ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll(".chapters a"));
+  var secs = links.map(function(a){ return document.querySelector(a.getAttribute("href")); });
+  var chapterNow = document.getElementById("chapterNow");
+  var chapterNames = "一二三四五六七";
+  function spy(){
+    var y = window.scrollY + window.innerHeight*0.34, idx = 0;
+    for (var i=0;i<secs.length;i++){ if (secs[i] && secs[i].offsetTop <= y) idx = i; }
+    links.forEach(function(a,i){ a.setAttribute("aria-current", i===idx ? "true" : "false"); });
+    if (chapterNow) chapterNow.textContent = chapterNames.charAt(idx) + " / 七";
+  }
+  window.addEventListener("scroll", spy, {passive:true});
+
+  /* ---------- 首屏：按住发声 ---------- */
+  var voiceCv = document.getElementById("voiceCanvas");
+  var soundKey = document.getElementById("soundKey");
+  var idle = barsFor("青禾艺术 听见 从音乐出发，建立一生的感受力与表达力", 64);
+  var staticData = idle.slice();
+
+  function paintVoice(){
+    if (live && analyser){
+      var buf = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteTimeDomainData(buf);
+      var n = 64, out = [];
+      for (var i=0;i<n;i++){
+        var a = buf[Math.floor(i*buf.length/n)];
+        var b = buf[Math.floor((i+1)*buf.length/n)];
+        var v = Math.abs((a-128) + (b-128))/2/128;
+        out.push(Math.max(0.06, Math.min(1, v*3.4)));
+      }
+      drawWave(voiceCv, out, {color:css("--dawn-soft")});
+      requestAnimationFrame(paintVoice);
+    } else {
+      drawWave(voiceCv, staticData, {color:css("--dawn"), dim:"rgba(127,166,196,.22)"});
+    }
+  }
+  function startVoice(){
+    var a = audio();
+    if (!a){ soundKey.setAttribute("aria-pressed","false"); return; }
+    if (a.state === "suspended") a.resume();
+    soundKey.setAttribute("aria-pressed","true");
+    live = true;
+    var base = PENT[4];
+    note(hz(base), 0, 2.6, 0.14);
+    note(hz(base+7), 0.035, 2.4, 0.075);
+    note(hz(base+12), 0.07, 2.2, 0.042);
+    paintVoice();
+  }
+  function stopVoice(){
+    soundKey.setAttribute("aria-pressed","false");
+    if (!live) return;
+    live = false;
+    setTimeout(function(){ if(!live) paintVoice(); }, 60);
+  }
+  ["pointerdown","keydown"].forEach(function(ev){
+    soundKey.addEventListener(ev, function(e){
+      if (ev === "keydown" && e.key !== " " && e.key !== "Enter") return;
+      e.preventDefault(); startVoice();
+    });
+  });
+  ["pointerup","pointercancel","pointerleave","keyup","blur"].forEach(function(ev){
+    soundKey.addEventListener(ev, function(){ stopVoice(); });
+  });
+
+  /* ---------- 四个身份 ---------- */
+  var roleCv = document.getElementById("roleCanvas");
+  var roleNames = ["新家长","在读家长","老师","您"];
+  function drawRole(i){
+    var g = fitCanvas(roleCv);
+    var w = roleCv.getBoundingClientRect().width, h = roleCv.getBoundingClientRect().height;
+    g.clearRect(0,0,w,h);
+    g.fillStyle = "rgba(127,166,196,.07)";
+    g.fillRect(0,0,w,h);
+    var pad = 14, top = h*0.18;
+
+    /* 视觉语言：一律 1px 冷色描边 + 内部细线表示文字，不出现实心灰块；
+       只有被强调的那一个是琥珀实心。目标是读成“机器画的界面示意图”，
+       而不是“还没加载出来的骨架占位”。 */
+    var COLD = "rgba(127,166,196,";
+    function frame(x,y,bw,bh,a){
+      g.strokeStyle = COLD + (a||0.42) + ")"; g.lineWidth = 1;
+      g.strokeRect(x+0.5, y+0.5, Math.max(1,bw-1), Math.max(1,bh-1));
+    }
+    function textLine(x,y,bw,a,hgt){
+      g.fillStyle = COLD + (a||0.5) + ")";
+      g.fillRect(x, y, Math.max(1,bw), hgt||2);
+    }
+    function solid(x,y,bw,bh,col){ g.fillStyle = col; g.fillRect(x,y,bw,bh); }
+
+    g.fillStyle = css("--dawn-soft");
+    g.font = "600 12px ui-monospace, Menlo, monospace";
+    g.fillText(roleNames[i], pad, top-4);
+
+    if (i === 0){                       /* 新家长：公开页 = 标题 + 三列卡片 */
+      solid(pad, top, w*0.46, 3, css("--dawn"));
+      textLine(pad, top+12, w*0.3, .42);
+      var cw = (w-2*pad-16)/3;
+      for (var k=0;k<3;k++){
+        var cx = pad + k*(cw+8);
+        frame(cx, top+34, cw, h-top-56);
+        textLine(cx+7, top+44, cw-14, .5);
+        textLine(cx+7, top+53, cw*0.55, .3);
+      }
+    } else if (i === 1){                /* 在读家长：一条时间轴 + 每站一张小卡 */
+      solid(pad, top, w*0.36, 3, css("--dawn"));
+      var ty = h*0.6;
+      g.strokeStyle = COLD + ".5)"; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(pad, ty); g.lineTo(w-pad, ty); g.stroke();
+      for (var m=0;m<5;m++){
+        var x = pad + m*(w-2*pad)/4;
+        g.beginPath(); g.arc(x, ty, 3.5, 0, 6.3);
+        if (m===4){ g.fillStyle = css("--dawn"); g.fill(); }
+        else { g.strokeStyle = COLD + ".55)"; g.stroke(); }
+        frame(x-10, ty+10, 20, 16, .34);
+        textLine(x-6, ty+16, 12, .3);
+      }
+    } else if (i === 2){                /* 老师：课表网格，一格是当堂 */
+      solid(pad, top, w*0.3, 3, css("--dawn"));
+      var gw=(w-2*pad)/4, gh=(h-top-40)/3;
+      for (var r=0;r<3;r++) for (var c=0;c<4;c++){
+        var gx = pad + c*gw, gy = top+22 + r*gh;
+        if (r===1&&c===2) solid(gx+2, gy+2, gw-6, gh-6, css("--dawn"));
+        else frame(gx+2, gy+2, gw-6, gh-6, .32);
+      }
+    } else {                            /* 您：一排数字 + 说明 */
+      solid(pad, top, w*0.26, 3, css("--dawn"));
+      var bw2 = (w-2*pad-24)/4;
+      for (var q=0;q<4;q++){
+        var qx = pad + q*(bw2+8);
+        frame(qx, top+22, bw2, 18, .45);
+        textLine(qx+5, top+29, bw2*0.55, .6, 3);
+        textLine(qx, top+48, bw2*0.7, .3);
+      }
+    }
+  }
+  var segs = Array.prototype.slice.call(document.querySelectorAll("#roles .seg"));
+  segs.forEach(function(b){
+    b.addEventListener("click", function(){
+      segs.forEach(function(o){ o.setAttribute("aria-pressed", o===b ? "true":"false"); });
+      drawRole(Number(b.dataset.i));
+      var a = audio(); if (a && a.state==="suspended") a.resume();
+      note(hz(PENT[2 + Number(b.dataset.i)*2]), 0, 0.9, 0.075);
+    });
+  });
+
+  /* ---------- 成长时间轴 ---------- */
+  var axisCv = document.getElementById("axisCanvas");
+  var nodes = Array.prototype.slice.call(document.querySelectorAll("#axisTrack .nodetab"));
+  var axisData = nodes.map(function(n){ return barsFor(n.querySelector(".ntext").textContent.trim(), 72); });
+  function paintAxis(i, upto){
+    drawWave(axisCv, axisData[i], {color:css("--dawn"), dim:"rgba(127,166,196,.2)", upto:upto});
+  }
+  nodes.forEach(function(b){
+    b.addEventListener("click", function(){
+      nodes.forEach(function(o){ o.setAttribute("aria-pressed", o===b ? "true":"false"); });
+      paintAxis(Number(b.dataset.i), null);
+      var a = audio(); if (a && a.state==="suspended") a.resume();
+      note(hz(PENT[Number(b.dataset.i)*2]), 0, 0.7, 0.058);
+    });
+  });
+
+  /* ---------- 按住三秒，模拟三十秒 ---------- */
+  var recKey = document.getElementById("recKey");
+  var recBar = document.getElementById("recBar");
+  var recStatus = document.getElementById("recStatus");
+  var recRaf = null, recStart = 0, recHold = false, recDone = false;
+  var HOLD = 3000;
+  function recTick(now){
+    if (!recHold) return;
+    var p = Math.min(1, (now - recStart)/HOLD);
+    recBar.style.width = (p*100).toFixed(1) + "%";
+    recStatus.textContent = "正在记录… " + Math.round(p*30) + " / 30 秒";
+    recStatus.classList.remove("done");
+    paintAxis(3, Math.round(p*71));
+    if (p >= 1){
+      recHold = false; recDone = true;
+      recKey.setAttribute("aria-pressed","false");
+      recStatus.textContent = "已存进这条时间轴";
+      recStatus.classList.add("done");
+      if (!reduce.matches){ note(hz(PENT[7]), 0, 1.1, 0.105); note(hz(PENT[9]), 0.12, 1.3, 0.072); }
+      return;
+    }
+    recRaf = requestAnimationFrame(recTick);
+  }
+  function recStartFn(){
+    var a = audio(); if (a && a.state==="suspended") a.resume();
+    if (recDone){ recDone = false; recBar.style.width="0%"; }
+    recHold = true; recStart = performance.now();
+    recKey.setAttribute("aria-pressed","true");
+    recStatus.textContent = "正在记录… 0 / 30 秒";
+    recStatus.classList.remove("done");
+    if (recRaf) cancelAnimationFrame(recRaf);
+    recRaf = requestAnimationFrame(recTick);
+  }
+  function recStopFn(){
+    if (!recHold) return;
+    recHold = false;
+    if (recRaf) cancelAnimationFrame(recRaf);
+    recKey.setAttribute("aria-pressed","false");
+    if (!recDone){
+      recStatus.textContent = "松手了，这一段没有留下";
+      recStatus.classList.remove("done");
+      paintAxis(3, null);
+      recBar.style.width = "0%";
+    }
+  }
+  recKey.addEventListener("pointerdown", function(e){ e.preventDefault(); recStartFn(); });
+  recKey.addEventListener("keydown", function(e){ if (e.key===" "||e.key==="Enter"){ e.preventDefault(); recStartFn(); } });
+  ["pointerup","pointercancel","pointerleave","keyup","blur"].forEach(function(ev){
+    recKey.addEventListener(ev, recStopFn);
+  });
+
+  /* ---------- AI 音乐创作 ---------- */
+  var scoreCv = document.getElementById("scoreCanvas");
+  var artCv = document.getElementById("artCanvas");
+  var srcBtns = Array.prototype.slice.call(document.querySelectorAll("#srcs .srcbtn"));
+  var SRC_SEED = ["哼一段自己想到的旋律","用几句话描述今天的心情","那天的天空、那只猫、那场雨"];
+
+  function drawScore(i, playhead){
+    var g = fitCanvas(scoreCv);
+    var w = scoreCv.getBoundingClientRect().width, h = scoreCv.getBoundingClientRect().height;
+    g.clearRect(0,0,w,h);
+    g.fillStyle = "rgba(127,166,196,.08)"; g.fillRect(0,0,w,h);
+    var lines = 5, top = h*0.2, gap = (h*0.6)/(lines-1);
+    g.strokeStyle = "rgba(127,166,196,.3)"; g.lineWidth = 1;
+    for (var L=0; L<lines; L++){
+      g.beginPath(); g.moveTo(0, top+L*gap); g.lineTo(w, top+L*gap); g.stroke();
+    }
+    var r = rng(hashSeed(SRC_SEED[i])), notes = 16, step = (w-24)/notes;
+    g.lineWidth = 3; g.lineCap = "round";
+    for (var n=0; n<notes; n++){
+      var deg = PENT[Math.floor(r()*PENT.length)];
+      var y = top + gap*4 - (deg/24)*gap*4;
+      g.strokeStyle = (playhead!=null && n>playhead) ? "rgba(127,166,196,.35)" : css("--dawn");
+      g.beginPath(); g.moveTo(12+n*step, y); g.lineTo(12+n*step+step*0.62, y); g.stroke();
+      if (n%4===0){ g.beginPath(); g.arc(12+n*step, y, 3.4, 0, 6.3); g.fillStyle = css("--dawn-soft"); g.fill(); }
+    }
+  }
+  function drawArt(i){
+    var g = fitCanvas(artCv);
+    var w = artCv.getBoundingClientRect().width, h = artCv.getBoundingClientRect().height;
+    g.clearRect(0,0,w,h);
+    g.fillStyle = "#0B1826"; g.fillRect(0,0,w,h);
+    var r = rng(hashSeed(SRC_SEED[i] + "画"));
+    if (i === 0){                        /* 旋律：同心弧 */
+      for (var k=0;k<9;k++){
+        g.beginPath();
+        g.arc(w*0.5, h*0.62, 14 + k*13 + r()*6, Math.PI*1.08, Math.PI*1.92);
+        g.strokeStyle = "rgba(242,179,61," + (0.62 - k*0.055).toFixed(2) + ")";
+        g.lineWidth = 2.2; g.stroke();
+      }
+    } else if (i === 1){                 /* 心情：横向色带 */
+      for (var m=0;m<7;m++){
+        var y = h*0.16 + m*(h*0.68/7);
+        g.fillStyle = m%2 ? "rgba(242,179,61,"+(0.1+r()*0.28).toFixed(2)+")" : "rgba(127,166,196,"+(0.1+r()*0.24).toFixed(2)+")";
+        g.fillRect(w*0.08 + r()*w*0.1, y, w*(0.5+r()*0.36), h*0.68/7*0.62);
+      }
+    } else {                             /* 照片：天空 / 猫 / 雨 */
+      var grd = g.createLinearGradient(0,0,0,h);
+      grd.addColorStop(0,"rgba(127,166,196,.30)"); grd.addColorStop(1,"rgba(242,179,61,.14)");
+      g.fillStyle = grd; g.fillRect(0,0,w,h);
+      g.strokeStyle = "rgba(244,241,234,.34)"; g.lineWidth = 1;
+      for (var d=0; d<46; d++){
+        var x = r()*w, y2 = r()*h*0.8, len = 6+r()*16;
+        g.beginPath(); g.moveTo(x,y2); g.lineTo(x-3, y2+len); g.stroke();
+      }
+      g.fillStyle = "rgba(8,19,31,.9)";
+      g.beginPath();
+      g.moveTo(w*0.62, h*0.82);
+      g.quadraticCurveTo(w*0.7, h*0.5, w*0.82, h*0.6);
+      g.quadraticCurveTo(w*0.9, h*0.66, w*0.86, h*0.84);
+      g.closePath(); g.fill();
+    }
+    g.fillStyle = "rgba(244,241,234,.5)";
+    g.font = "12px ui-monospace, Menlo, monospace";
+    g.fillText("概念演示", 12, h-12);
+  }
+  var playTimers = [];
+  function playMelody(i){
+    playTimers.forEach(clearTimeout); playTimers = [];
+    var a = audio();
+    if (!a){ return; }
+    if (a.state === "suspended") a.resume();
+    var r = rng(hashSeed(SRC_SEED[i])), notes = 16, t = 0;
+    for (var n=0; n<notes; n++){
+      var deg = PENT[Math.floor(r()*PENT.length)];
+      (function(n, deg, t){
+        note(hz(deg), t, 0.62, 0.088);
+        if (n % 4 === 0) note(hz(deg-12), t, 0.9, 0.05);
+        playTimers.push(setTimeout(function(){ drawScore(i, n); }, Math.max(0, t*1000)));
+      })(n, deg, t);
+      t += 0.26;
+    }
+    playTimers.push(setTimeout(function(){ drawScore(i, notes); }, (t*1000)+260));
+  }
+  srcBtns.forEach(function(b){
+    b.addEventListener("click", function(){
+      var i = Number(b.dataset.i);
+      srcBtns.forEach(function(o){ o.setAttribute("aria-pressed", o===b ? "true":"false"); });
+      drawScore(i, null); drawArt(i); playMelody(i);
+    });
+  });
+
+  /* ---------- 初始化 ---------- */
+  function init(){
+    paintVoice();
+    drawRole(0);
+    paintAxis(0, null);
+    drawScore(0, null);
+    drawArt(0);
+    onScroll(); spy();
+  }
+  if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(init, 0);
+  else document.addEventListener("DOMContentLoaded", init);
+  window.addEventListener("resize", function(){
+    paintVoice(); drawRole(Number((document.querySelector('#roles .seg[aria-pressed="true"]')||{dataset:{i:0}}).dataset.i));
+    var cur = Number((document.querySelector('#axisTrack .nodetab[aria-pressed="true"]')||{dataset:{i:0}}).dataset.i);
+    paintAxis(cur, null);
+    var cs = Number((document.querySelector('#srcs .srcbtn[aria-pressed="true"]')||{dataset:{i:0}}).dataset.i);
+    drawScore(cs, null); drawArt(cs);
+  });
+  if (reduce.addEventListener) reduce.addEventListener("change", function(){ onScroll(); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>青禾艺术 · 「听见」线上成长空间 · 产品提案</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%2308131F'/%3E%3Cpath d='M5 19c3-8 6 5 9-2s6 7 9-3' stroke='%23F2B33D' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --night:#08131F;
+    --night-2:#0E1F31;
+    --night-3:#1C3A52;
+    --night-line:#1C3A52;
+    --dawn:#F2B33D;
+    --dawn-soft:#F7D08A;
+    --voice:#F4F1EA;
+    --voice-dim:#A9B4C2;
+    --resonance:#7FA6C4;
+    --ink-on-dawn:#20180A;
+    --serif:"Songti SC","Noto Serif SC",STSong,serif;
+    --kaiti:"Kaiti SC",KaiTi,STKaiti,"Noto Serif SC",serif;
+    --sans:"PingFang SC","Noto Sans SC","Hiragino Sans GB",system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+    --dawn-angle:205;
+    --rail:0px;
+    --pad:22px;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--night);
+    color:var(--voice);
+    font:17px/1.85 var(--sans);
+    letter-spacing:.01em;
+    overflow-x:hidden;
+  }
+  @media (min-width:768px){ body{font-size:18px;} :root{--pad:40px;} }
+
+  /* ---------- 天光：滚动即天亮 ---------- */
+  .sky{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  .sky .beam{
+    position:absolute;inset:-30%;
+    background:linear-gradient(calc(var(--dawn-angle) * 1deg),
+      rgba(242,179,61,0) 0%,
+      rgba(242,179,61,.05) 13%,
+      rgba(242,179,61,.22) 25%,
+      rgba(242,179,61,.07) 42%,
+      rgba(242,179,61,0) 60%);
+  }
+  .sky .grain{
+    position:absolute;inset:0;opacity:.9;
+    background:
+      radial-gradient(130% 55% at 46% -6%, rgba(127,166,196,.075), transparent 72%),
+      radial-gradient(90% 40% at 8% 88%, rgba(242,179,61,.05), transparent 70%);
+  }
+  /* 纸面颗粒：由脚本生成并注入，不引入任何外部资源 */
+  .sky .grain::after{
+    content:"";position:absolute;inset:0;opacity:.5;
+    background-image:var(--grain);background-repeat:repeat;background-size:128px 128px;
+  }
+
+  /* ---------- 左轨声纹（≥1024） ---------- */
+  .rail{display:none;}
+  @media (min-width:1024px){
+    :root{--rail:88px;}
+    .rail{
+      display:block;position:fixed;left:0;top:0;bottom:0;width:var(--rail);z-index:1;
+      padding:84px 0 40px;
+    }
+    .rail .bars{display:flex;flex-direction:column;justify-content:space-between;height:100%;align-items:flex-start;}
+    .rail .bar{height:2px;border-radius:2px;background:var(--night-3);transition:background .5s linear;}
+    .rail .bar.on{background:var(--dawn);}
+    /* 只有“已填充”还不够：滚到顶部时 88 段全暗，看上去像一块底纹。
+       加一根随滚动下移的琥珀指针，让它从“纹理”变成“仪表”。 */
+    .rail .needle{
+      position:absolute;left:0;width:100%;height:2px;background:var(--dawn);
+      box-shadow:0 0 10px rgba(242,179,61,.6);border-radius:2px;
+    }
+  }
+
+  /* ---------- 顶栏 ---------- */
+  .top{
+    position:sticky;top:0;z-index:5;background:var(--night);
+    border-bottom:1px solid rgba(127,166,196,.14);
+  }
+  .top .inner{
+    display:flex;align-items:center;gap:16px;
+    padding:10px var(--pad);max-width:1180px;margin:0 auto;
+  }
+  .mark{
+    font:600 16px/1 var(--serif);letter-spacing:.14em;color:var(--voice);
+    white-space:nowrap;flex:0 0 auto;
+  }
+  .mark b{color:var(--dawn);font-weight:600;}
+  .chapters{
+    display:flex;gap:2px;margin-left:auto;overflow-x:auto;scrollbar-width:none;
+  }
+  .chapters::-webkit-scrollbar{display:none;}
+  .chapters a{
+    font:16px/1 var(--kaiti);color:var(--voice-dim);text-decoration:none;
+    padding:12px 10px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;
+  }
+  .chapters a[aria-current="true"]{color:var(--ink-on-dawn);background:var(--dawn);border-radius:2px;}
+  .chapters a:hover{color:var(--dawn);}
+  .chapters a[aria-current="true"]:hover{color:var(--ink-on-dawn);}
+  .chapters a:focus-visible,.key:focus-visible,.seg:focus-visible,.nodetab:focus-visible,.srcbtn:focus-visible{
+    outline:2px solid var(--dawn-soft);outline-offset:3px;
+  }
+  .top .progress{display:flex;align-items:flex-end;gap:2px;height:24px;flex:0 0 96px;}
+  .top .progress i{flex:1;background:var(--night-3);border-radius:1px;}
+  .top .progress i.on{background:var(--dawn);}
+  @media (min-width:1024px){ .top .progress{display:none;} }
+  /* 窄屏：七个章节方块在顶栏里放不下（实测 390 下只剩 61px，看上去像一个孤立方块），
+     改为「当前章节 / 总章节」一个指示，方向感留住，也不假装有七个可点目标。 */
+  .chapterNow{display:none;}
+  @media (max-width:1023px){
+    .chapters{display:none;}
+    .chapterNow{display:block;font:16px/1 var(--mono);color:var(--dawn);white-space:nowrap;}
+  }
+  /* 320 宽度下顶栏会差几像素，把品牌与进度条各让一点。
+     进度条宽度必须同时收 gap：56 段之间 55 个 2px 间隙本身就是 110px 的最小宽度，
+     只改 flex-basis 收不下去（实测 flex:0 0 68px 仍渲染成 110px）。 */
+  @media (max-width:419px){
+    .top .inner{gap:8px;padding-left:16px;padding-right:16px;}
+    .mark{letter-spacing:.02em;}
+    .top .progress{flex:0 0 68px;gap:1px;}
+  }
+
+  .skip{
+    position:absolute;left:-9999px;top:0;color:var(--voice);font:16px/1.2 var(--mono);
+    padding:14px 18px;min-height:44px;display:inline-flex;align-items:center;border-radius:2px;
+  }
+  .skip:focus{left:8px;top:8px;z-index:9;background:var(--dawn);color:var(--ink-on-dawn);outline:2px solid var(--dawn-soft);outline-offset:2px;}
+
+  /* ---------- 版心 ---------- */
+  main{position:relative;z-index:2;padding-left:var(--rail);}
+  .wrap{max-width:min(1180px,100% - var(--pad) * 2);margin:0 auto;}
+  .col{max-width:34em;}
+
+  /* ---------- 首屏 ---------- */
+  .hero{padding:16px 0 8px;}
+  /* text-wrap 用 pretty 而非 balance：balance 会把「青禾艺术 ·「听见」线上成长空间 · 产品提案」
+     平均分配到两行，正好从「听见」中间断开（390 实测「听」与「见」分居两行）。
+     pretty 只在末尾做微调，品牌词保持完整。 */
+  .hero h1{
+    font:400 clamp(33px,9vw,62px)/1.36 var(--kaiti);
+    letter-spacing:.06em;margin:0 0 16px;text-wrap:pretty;
+  }
+  .hero h1::after{
+    content:"";display:block;width:74px;height:2px;margin-top:18px;background:var(--dawn);
+  }
+  /* 320 下 9vw 只有 28.8px，被 clamp 抬回 33px，标题挤在 276px 里仍会把「听见」拆开；
+     放开下限到 30px 并去掉字距后品牌词不再断开，且不产生横向溢出。 */
+  @media (max-width:419px){
+    .hero h1{font-size:clamp(30px,9vw,62px);letter-spacing:0;}
+  }
+  .letterhead{font:16px/1.8 var(--mono);color:var(--voice-dim);letter-spacing:.06em;}
+  /* 390 实测原先把日期断成「2026 年 9」/「月」；pretty 会把短尾行收回去。 */
+  .letterhead p{margin:0;text-wrap:pretty;}
+  .letterhead .nb{white-space:nowrap;}
+  .letterhead p + p{margin-top:3px;}
+  /* 390 下「提案人：…｜ 2026 年 9 月」带 .06em 字距时需 350px（容器 346px），
+     会被断成「2026 年 」/「9 月」；收掉字距后 325px 一行放得下。
+     注意：这条必须在上面 .letterhead 基则之后，否则同特异性下被基则盖掉。 */
+  @media (max-width:419px){
+    .letterhead{letter-spacing:0;}
+  }
+  .overture{
+    margin:24px 0 0;padding:16px 20px;
+    background:linear-gradient(90deg, rgba(242,179,61,.10), rgba(242,179,61,0));
+    border-left:2px solid var(--dawn);
+    font:400 clamp(20px,5vw,26px)/1.58 var(--kaiti);letter-spacing:.015em;color:var(--voice);
+    max-width:34em;
+  }
+  .overture p{margin:0;}
+
+  /* ---------- 乐器：按住听一声 ---------- */
+  .inst{margin:20px 0 0;border:1px solid rgba(127,166,196,.22);border-radius:3px;background:var(--night-2);}
+  .inst .cap{
+    display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid rgba(127,166,196,.16);
+  }
+  .tag{
+    font:16px/1 var(--mono);letter-spacing:.08em;color:var(--ink-on-dawn);background:var(--dawn);
+    padding:5px 8px;border-radius:2px;white-space:nowrap;
+  }
+  /* 原先 m4 的「概念演示」用了冷色 .cool，两位独立评审都把它读成“标签颜色不一致 / 像 bug”。
+     语义上的区分没传达出去，诚实标签本身的一致性更重要 —— 统一为琥珀。 */
+  .tag.cool{background:var(--dawn);color:var(--ink-on-dawn);}
+  .inst .cap .lbl{font:16px/1.4 var(--mono);color:var(--voice-dim);letter-spacing:.06em;}
+  #voiceCanvas{display:block;width:100%;height:86px;background:transparent;}
+  @media (min-width:768px){ #voiceCanvas{height:172px;} }
+  .inst .foot{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:14px 16px 16px;border-top:1px solid rgba(127,166,196,.16);}
+  .key{
+    font:600 17px/1 var(--sans);color:var(--ink-on-dawn);background:var(--dawn);
+    border:0;border-radius:2px;padding:18px 26px;min-height:54px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:10px;
+  }
+  .key::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--ink-on-dawn);}
+  .key[aria-pressed="true"]{background:var(--dawn-soft);}
+  .hint{font:16px/1.65 var(--sans);color:var(--voice-dim);margin:0;flex:1 1 220px;}
+
+  /* ---------- 章节 ---------- */
+  .mv{padding:64px 0 10px;border-top:1px solid rgba(127,166,196,.13);margin-top:56px;}
+  .mv:first-of-type{border-top:0;margin-top:34px;}
+  /* 章节声纹刻度：由该章标题文本确定性派生，给长文中后段一个视觉起点 */
+  .chTick{display:block;margin:0 0 14px;color:var(--dawn);opacity:.5;}
+  .chTick svg{display:block;width:96px;height:14px;}
+  @media (min-width:768px){ .chTick{margin-bottom:18px;} .chTick svg{width:132px;height:16px;} }
+  .mv-title{
+    font:400 clamp(25px,6.3vw,39px)/1.5 var(--kaiti);letter-spacing:.06em;margin:0 0 28px;
+    max-width:30em;
+  }
+  .sub{font:400 clamp(20px,4.9vw,26px)/1.5 var(--serif);letter-spacing:.03em;margin:46px 0 18px;color:var(--dawn-soft);}
+  .sub:first-of-type{margin-top:8px;}
+
+  /* ---------- 正文 ---------- */
+  .prose p{margin:0 0 1.05em;max-width:34em;}
+  .prose strong{color:#FFFDF6;font-weight:600;}
+  .prose em{font-style:normal;color:var(--dawn-soft);}
+  .prose ul{list-style:none;margin:0 0 1.3em;padding:0;max-width:34em;}
+  .prose li{position:relative;padding-left:22px;margin:0 0 .72em;}
+  .prose li::before{content:"";position:absolute;left:0;top:.82em;width:12px;height:1px;background:var(--dawn);}
+  .prose .note{
+    margin:0 0 1.35em;padding:18px 20px 18px 22px;
+    background:rgba(242,179,61,.075);border-left:2px solid var(--dawn);border-radius:0 3px 3px 0;
+    font:400 clamp(19px,4.6vw,23px)/1.72 var(--kaiti);letter-spacing:.015em;
+    max-width:34em;
+  }
+  .prose .note p{margin:0;max-width:none;}
+  .prose .aside{
+    margin:0 0 1.35em;padding:16px 0 16px 20px;border-left:1px solid rgba(127,166,196,.34);
+    font:16px/1.8 var(--mono);color:var(--voice-dim);letter-spacing:.03em;max-width:34em;
+  }
+
+  /* ---------- 概念演示外壳 ---------- */
+  .demo{margin:30px 0 34px;border:1px solid rgba(127,166,196,.22);border-radius:3px;background:var(--night-2);}
+  .demo>.cap{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(127,166,196,.16);}
+  .demo>.cap .lbl{font:16px/1.4 var(--mono);color:var(--voice-dim);letter-spacing:.06em;}
+  .demo>.body{padding:18px 16px 22px;}
+  @media (min-width:768px){ .demo>.body{padding:22px 24px 26px;} }
+
+  /* ---------- 四个身份 ---------- */
+  .ledger{display:grid;gap:8px;}
+  .seg{
+    display:grid;grid-template-columns:1fr;gap:8px;width:100%;text-align:left;cursor:pointer;
+    background:transparent;border:1px solid rgba(127,166,196,.2);border-radius:3px;
+    padding:16px;min-height:64px;color:var(--voice);font:inherit;
+  }
+  .seg:hover{border-color:rgba(242,179,61,.5);}
+  .seg[aria-pressed="true"]{border-color:var(--dawn);background:rgba(242,179,61,.08);}
+  .seg .who{font:600 17px/1.4 var(--sans);color:var(--dawn-soft);display:flex;align-items:center;gap:8px;}
+  .seg .who::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--night-3);}
+  .seg[aria-pressed="true"] .who::before{background:var(--dawn);}
+  .seg .what{font:16px/1.72 var(--sans);color:var(--voice);}
+  .seg .what strong{color:#FFFDF6;}
+  @media (min-width:768px){
+    .seg{grid-template-columns:minmax(0,190px) minmax(0,1fr);gap:18px;align-items:baseline;}
+  }
+  .colhead{display:none;}
+  @media (min-width:768px){
+    .colhead{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr);gap:18px;
+      font:16px/1 var(--mono);letter-spacing:.1em;color:var(--voice-dim);padding:0 16px 10px;}
+  }
+  #roleCanvas{display:block;width:100%;height:120px;margin-top:18px;border:1px solid rgba(127,166,196,.18);border-radius:3px;}
+
+  /* ---------- 成长时间轴 ---------- */
+  .axis{margin-top:6px;}
+  .axis .track{
+    display:grid;gap:10px;padding:0;
+  }
+  @media (min-width:768px){
+    .axis .track{
+      display:flex;gap:14px;overflow-x:auto;padding:6px 0 14px;
+      scroll-snap-type:x proximity;
+    }
+  }
+  .axis .track::-webkit-scrollbar{height:6px;}
+  .axis .track::-webkit-scrollbar-thumb{background:rgba(127,166,196,.3);border-radius:3px;}
+  .nodetab{
+    flex:0 0 min(78vw,300px);scroll-snap-align:start;text-align:left;cursor:pointer;
+    background:var(--night);border:1px solid rgba(127,166,196,.2);border-radius:3px;
+    padding:0;color:var(--voice);font:inherit;overflow:hidden;
+    display:grid;grid-template-columns:56px minmax(0,1fr);
+  }
+  .nodetab:hover{border-color:rgba(242,179,61,.45);}
+  .nodetab[aria-pressed="true"]{border-color:var(--dawn);}
+  .nodetab .nlabel{
+    display:flex;align-items:flex-start;justify-content:center;font:16px/1 var(--mono);letter-spacing:.1em;
+    color:var(--voice-dim);padding:14px 0;border-right:1px solid rgba(127,166,196,.16);
+  }
+  .nodetab[aria-pressed="true"] .nlabel{color:var(--ink-on-dawn);background:var(--dawn);border-right-color:var(--dawn);}
+  .nodetab .ntext{display:block;padding:14px 16px;font:16px/1.72 var(--sans);}
+  @media (min-width:768px){
+    .nodetab{display:block;}
+    .nodetab .nlabel{display:block;padding:13px 14px;border-right:0;border-bottom:1px solid rgba(127,166,196,.16);}
+    .nodetab[aria-pressed="true"] .nlabel{border-bottom-color:var(--dawn);}
+  }
+  .nodetab .ntext strong{color:#FFFDF6;}
+  #axisCanvas{display:block;width:100%;height:96px;margin-top:16px;border:1px solid rgba(127,166,196,.18);border-radius:3px;}
+  .record{margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:14px;}
+  .meter{flex:1 1 200px;height:8px;background:var(--night);border:1px solid rgba(127,166,196,.22);border-radius:2px;overflow:hidden;}
+  .meter i{display:block;height:100%;width:0;background:var(--dawn);}
+  .status{font:16px/1.6 var(--mono);color:var(--voice-dim);letter-spacing:.03em;min-width:12em;}
+  .status.done{color:var(--dawn-soft);}
+
+  /* ---------- 编曲 ---------- */
+  .srcs{display:flex;flex-wrap:wrap;gap:10px;}
+  .srcbtn{
+    cursor:pointer;background:var(--night);border:1px solid rgba(127,166,196,.22);border-radius:2px;
+    color:var(--voice);font:16px/1 var(--sans);padding:15px 16px;min-height:50px;
+  }
+  .srcbtn:hover{border-color:rgba(242,179,61,.5);}
+  .srcbtn[aria-pressed="true"]{border-color:var(--dawn);color:var(--ink-on-dawn);background:var(--dawn);}
+  #scoreCanvas{display:block;width:100%;height:150px;margin-top:16px;border:1px solid rgba(127,166,196,.18);border-radius:3px;}
+  #artCanvas{display:block;width:100%;height:190px;margin-top:10px;border:1px solid rgba(127,166,196,.18);border-radius:3px;}
+  .duo{display:grid;gap:10px;}
+  @media (min-width:768px){ .duo{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;} .duo>div:first-child{grid-column:1;} }
+
+  /* ---------- 对照账簿 ---------- */
+  .ledger2{display:grid;gap:10px;}
+  .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:12px;padding:14px 16px;border:1px solid rgba(127,166,196,.18);border-radius:3px;background:var(--night-2);}
+  /* 最后一行是「您」那一行（原文：您对青禾的了解，靠问、靠记、靠感觉）——
+     它是写给读这份提案的人的，而不是写给家长或老师的。把这一行单独标出来，
+     六个一模一样的卡壳就不会读成一张平铺的表。
+     第一版只改了边框透明度（.18 → .42），实测交给视觉模型它根本没看出来——
+     差异太小就不算差异。改成琥珀实心内边 + 更亮的面。用 inset 阴影而不是 border-left，
+     避免这一行的内容相对其他行右移 3px。 */
+  .row2.self{
+    border-color:rgba(242,179,61,.55);
+    background:linear-gradient(90deg, rgba(242,179,61,.11), rgba(242,179,61,0) 64%), var(--night-2);
+    box-shadow:inset 3px 0 0 var(--dawn);
+  }
+  .row2 .was{font:16px/1.7 var(--sans);color:var(--voice-dim);padding-right:12px;border-right:1px solid rgba(127,166,196,.18);}
+  .row2 .now{font:16px/1.7 var(--sans);color:var(--voice);display:flex;gap:8px;align-items:flex-start;}
+  .row2 .now::before{content:"";flex:0 0 auto;width:8px;height:8px;margin-top:.66em;border-radius:50%;background:var(--dawn);}
+  @media (min-width:768px){
+    .row2{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px;padding:16px 18px;}
+    .row2 .was{padding-right:16px;}
+  }
+  /* 对照账簿的列头在手机上必须可见：否则读者分不清哪句是「现在」 */
+  .head2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:12px;
+    font:16px/1 var(--mono);letter-spacing:.08em;color:var(--voice-dim);padding:0 16px 8px;}
+  .head2 span:first-child{padding-right:12px;border-right:1px solid transparent;}
+  @media (min-width:768px){
+    .head2{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px;letter-spacing:.1em;padding:0 18px 8px;}
+  }
+
+  /* ---------- 收尾 ---------- */
+  .close{padding:70px 0 30px;}
+  .close .final{
+    font:400 clamp(21px,5.3vw,30px)/1.7 var(--kaiti);letter-spacing:.015em;
+    padding:24px 0 24px 22px;border-left:2px solid var(--dawn);max-width:34em;margin:0;
+  }
+  .sign{margin-top:46px;font:16px/1.95 var(--mono);color:var(--voice-dim);letter-spacing:.06em;}
+  .sign p{margin:0;}
+  .sign em{font-style:normal;color:var(--voice);}
+  footer{
+    position:relative;z-index:2;padding:0 var(--pad) 56px;margin-left:var(--rail);
+  }
+  footer .inner{max-width:min(1180px,100%);margin:0 auto;}
+  .concept-note{
+    border-top:1px solid rgba(127,166,196,.2);padding-top:18px;
+    font:16px/1.8 var(--sans);color:var(--voice-dim);max-width:44em;
+  }
+  .concept-note b{color:var(--voice);font-weight:600;}
+  [hidden]{display:none !important;}
+</style>
+</head>
+<body>
+<a class="skip" href="#m1">跳到正文</a>
+<div class="sky" aria-hidden="true"><span class="beam"></span><span class="grain"></span></div>
+<div class="rail" aria-hidden="true"><div class="bars" id="railBars"></div><span class="needle" id="railNeedle"></span></div>
+
+<header class="top">
+  <div class="inner">
+    <span class="mark">青禾艺术 · <b>「听见」</b></span>
+    <b class="chapterNow" id="chapterNow" aria-hidden="true">一 / 七</b>
+    <div class="progress" id="topBars" aria-hidden="true"></div>
+    <nav class="chapters" aria-label="章节">
+      <a href="#m1">一</a><a href="#m2">二</a><a href="#m3">三</a><a href="#m4">四</a>
+      <a href="#m5">五</a><a href="#m6">六</a><a href="#m7">七</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <!-- ================= 首屏 ================= -->
+  <section class="hero">
+    <h1>{{c001}}</h1>
+    <div class="letterhead">
+      <p>{{c002}}</p>
+      <p>{{c003}}</p>
+    </div>
+    <blockquote class="overture">{{c004}}</blockquote>
+
+    <figure class="inst">
+      <figcaption class="cap">
+        <span class="tag">概念演示</span>
+        <span class="lbl">按住，听一声</span>
+      </figcaption>
+      <canvas id="voiceCanvas" aria-hidden="true"></canvas>
+      <div class="foot">
+        <button class="key" id="soundKey" type="button" aria-pressed="false" aria-describedby="keyHint">按住发声</button>
+        <p class="hint" id="keyHint">声音由浏览器在本地合成，不是真实录音，也不上传任何内容。</p>
+      </div>
+    </figure>
+  </section>
+
+  <!-- ================= 一 ================= -->
+  <section class="mv" id="m1">
+    <h2 class="mv-title">{{c005}}</h2>
+    <div class="prose">
+      <p>{{c006}}</p>
+      <blockquote class="note">{{c007}}</blockquote>
+      <p>{{c008}}</p>
+      <ul>
+        <li>{{c009}}</li>
+        <li>{{c010}}</li>
+        <li>{{c011}}</li>
+        <li>{{c012}}</li>
+      </ul>
+      <p>{{c013}}</p>
+      <p>{{c014}}</p>
+      <p>{{c015}}</p>
+    </div>
+  </section>
+
+  <!-- ================= 二 ================= -->
+  <section class="mv" id="m2">
+    <h2 class="mv-title">{{c016}}</h2>
+    <div class="prose">
+      <p>{{c017}}</p>
+      <p>{{c018}}</p>
+      <p>{{c019}}</p>
+    </div>
+
+    <figure class="demo">
+      <figcaption class="cap">
+        <span class="tag">概念演示</span>
+        <span class="lbl">四个身份，四种视野</span>
+      </figcaption>
+      <div class="body">
+        <div class="colhead"><span>{{c020}}</span><span>{{c021}}</span></div>
+        <div class="ledger" id="roles" role="group" aria-label="四个身份，四种视野">
+          <button class="seg" type="button" aria-pressed="true" data-i="0">
+            <span class="who">{{c022}}</span><span class="what">{{c023}}</span>
+          </button>
+          <button class="seg" type="button" aria-pressed="false" data-i="1">
+            <span class="who">{{c024}}</span><span class="what">{{c025}}</span>
+          </button>
+          <button class="seg" type="button" aria-pressed="false" data-i="2">
+            <span class="who">{{c026}}</span><span class="what">{{c027}}</span>
+          </button>
+          <button class="seg" type="button" aria-pressed="false" data-i="3">
+            <span class="who">{{c028}}</span><span class="what">{{c029}}</span>
+          </button>
+        </div>
+        <canvas id="roleCanvas" aria-hidden="true"></canvas>
+      </div>
+    </figure>
+
+    <div class="prose">
+      <p>{{c030}}</p>
+    </div>
+  </section>
+
+  <!-- ================= 三 ================= -->
+  <section class="mv" id="m3">
+    <h2 class="mv-title">{{c031}}</h2>
+
+    <h3 class="sub">{{c032}}</h3>
+    <div class="prose">
+      <p>{{c033}}</p>
+      <p>{{c034}}</p>
+      <ul>
+        <li>{{c035}}</li>
+        <li>{{c036}}</li>
+        <li>{{c037}}</li>
+        <li>{{c038}}</li>
+      </ul>
+      <p>{{c039}}</p>
+    </div>
+
+    <h3 class="sub">{{c040}}</h3>
+    <div class="prose">
+      <p>{{c041}}</p>
+    </div>
+
+    <figure class="demo">
+      <figcaption class="cap">
+        <span class="tag">概念演示</span>
+        <span class="lbl">成长时间轴 · 选一段，看它的声纹</span>
+      </figcaption>
+      <div class="body">
+        <div class="axis">
+          <div class="track" id="axisTrack" role="group" aria-label="成长时间轴上的四段">
+            <button class="nodetab" type="button" aria-pressed="true" data-i="0">
+              <span class="nlabel">01</span><span class="ntext">{{c042}}</span>
+            </button>
+            <button class="nodetab" type="button" aria-pressed="false" data-i="1">
+              <span class="nlabel">02</span><span class="ntext">{{c043}}</span>
+            </button>
+            <button class="nodetab" type="button" aria-pressed="false" data-i="2">
+              <span class="nlabel">03</span><span class="ntext">{{c044}}</span>
+            </button>
+            <button class="nodetab" type="button" aria-pressed="false" data-i="3">
+              <span class="nlabel">04</span><span class="ntext">{{c045}}</span>
+            </button>
+          </div>
+          <canvas id="axisCanvas" aria-hidden="true"></canvas>
+          <div class="record">
+            <button class="key" id="recKey" type="button" aria-pressed="false">按住三秒</button>
+            <div class="meter" aria-hidden="true"><i id="recBar"></i></div>
+            <p class="status" id="recStatus" role="status" aria-live="polite">代替孩子课后的三十秒</p>
+          </div>
+        </div>
+      </div>
+    </figure>
+
+    <div class="prose">
+      <p>{{c046}}</p>
+      <blockquote class="note">{{c047}}</blockquote>
+      <p>{{c048}}</p>
+      <p>{{c049}}</p>
+      <p>{{c050}}</p>
+    </div>
+
+    <h3 class="sub">{{c051}}</h3>
+    <div class="prose">
+      <ul>
+        <li>{{c052}}</li>
+        <li>{{c053}}</li>
+        <li>{{c054}}</li>
+        <li>{{c055}}</li>
+      </ul>
+      <p>{{c056}}</p>
+    </div>
+
+    <h3 class="sub">{{c057}}</h3>
+    <div class="prose">
+      <ul>
+        <li>{{c058}}</li>
+        <li>{{c059}}</li>
+        <li>{{c060}}</li>
+        <li>{{c061}}</li>
+      </ul>
+      <p>{{c062}}</p>
+    </div>
+  </section>
+
+  <!-- ================= 四 ================= -->
+  <section class="mv" id="m4">
+    <h2 class="mv-title">{{c063}}</h2>
+    <div class="prose">
+      <p>{{c064}}</p>
+      <p class="aside">{{c065}}</p>
+      <p>{{c066}}</p>
+      <p>{{c067}}</p>
+      <p class="aside">{{c068}}</p>
+      <p>{{c069}}</p>
+    </div>
+
+    <figure class="demo">
+      <figcaption class="cap">
+        <span class="tag cool">概念演示</span>
+        <span class="lbl">AI 音乐创作 · 三种起点</span>
+      </figcaption>
+      <div class="body">
+        <div class="srcs" id="srcs" role="group" aria-label="选择一种创作起点">
+          <button class="srcbtn" type="button" aria-pressed="true" data-i="0">哼一段旋律</button>
+          <button class="srcbtn" type="button" aria-pressed="false" data-i="1">描述今天的心情</button>
+          <button class="srcbtn" type="button" aria-pressed="false" data-i="2">几张照片</button>
+        </div>
+        <div class="duo">
+          <div>
+            <canvas id="scoreCanvas" aria-hidden="true"></canvas>
+          </div>
+          <div>
+            <canvas id="artCanvas" aria-hidden="true"></canvas>
+          </div>
+        </div>
+      </div>
+    </figure>
+
+    <div class="prose">
+      <p>{{c070}}</p>
+      <p>{{c071}}</p>
+    </div>
+  </section>
+
+  <!-- ================= 五 ================= -->
+  <section class="mv" id="m5">
+    <h2 class="mv-title">{{c072}}</h2>
+    <div class="head2"><span>{{c073}}</span><span>{{c074}}</span></div>
+    <div class="ledger2">
+      <div class="row2"><span class="was">{{c075}}</span><span class="now">{{c076}}</span></div>
+      <div class="row2"><span class="was">{{c077}}</span><span class="now">{{c078}}</span></div>
+      <div class="row2"><span class="was">{{c079}}</span><span class="now">{{c080}}</span></div>
+      <div class="row2"><span class="was">{{c081}}</span><span class="now">{{c082}}</span></div>
+      <div class="row2"><span class="was">{{c083}}</span><span class="now">{{c084}}</span></div>
+      <div class="row2 self"><span class="was">{{c085}}</span><span class="now">{{c086}}</span></div>
+    </div>
+    <div class="prose" style="margin-top:30px">
+      <p>{{c087}}</p>
+      <blockquote class="note">{{c088}}</blockquote>
+      <p>{{c089}}</p>
+    </div>
+  </section>
+
+  <!-- ================= 六 ================= -->
+  <section class="mv" id="m6">
+    <h2 class="mv-title">{{c090}}</h2>
+    <div class="prose">
+      <p>{{c091}}</p>
+      <p>{{c092}}</p>
+      <p>{{c093}}</p>
+      <ul>
+        <li>{{c094}}</li>
+        <li>{{c095}}</li>
+        <li>{{c096}}</li>
+      </ul>
+      <p>{{c097}}</p>
+    </div>
+  </section>
+
+  <!-- ================= 七 ================= -->
+  <section class="mv" id="m7">
+    <h2 class="mv-title">{{c098}}</h2>
+    <div class="prose">
+      <p>{{c099}}</p>
+      <p>{{c100}}</p>
+    </div>
+    <div class="close">
+      <blockquote class="final">{{c101}}</blockquote>
+      <div class="sign"><p>{{c102}}</p></div>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <div class="inner">
+    <p class="concept-note">
+      <b>关于这一页：</b>本页把一份文字提案做成了可以走一遍的东西。页内所有互动——发声、时间轴、编曲——都是<b>概念演示</b>，
+      由浏览器在本地合成，用于说明「听见」这个空间打算怎么做；它们不对应任何已上线的功能，也不采集、不上传任何内容。
+      文案与提案原文一致。
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var root = document.documentElement;
+
+  /* ---------- 确定性伪随机：同一段文字永远得到同一条声纹 ---------- */
+  (function grain(){
+    /* 稀疏颗粒：大部分像素透明，PNG 压缩友好，视觉上是胶片频粒而非噪声 */
+    var N = 128;
+    var c = document.createElement("canvas"); c.width = N; c.height = N;
+    var g = c.getContext("2d"), img = g.createImageData(N,N), d = img.data;
+    var r = rng(20260921);
+    for (var i=0;i<d.length;i+=4){
+      if (r() < 0.035){
+        d[i]=244; d[i+1]=241; d[i+2]=234; d[i+3]= 60 + Math.floor(r()*90);
+      }
+    }
+    g.putImageData(img,0,0);
+    root.style.setProperty("--grain", "url(" + c.toDataURL() + ")");
+  })();
+  function hashSeed(str){
+    var h = 2166136261 >>> 0;
+    for (var i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    return h >>> 0;
+  }
+  function rng(seed){
+    var s = seed >>> 0;
+    return function(){ s ^= s<<13; s>>>=0; s ^= s>>>17; s ^= s<<5; s>>>=0; return s/4294967296; };
+  }
+  function barsFor(text, n){
+    var r = rng(hashSeed(text)), out = [], prev = 0.55;
+    for (var i=0;i<n;i++){
+      var v = r();
+      prev = prev*0.52 + v*0.48;               /* 相邻相关，像真实波形 */
+      var env = Math.sin(Math.PI * (i/(n-1))); /* 两端收敛，中间饱满 */
+      out.push(Math.max(0.1, Math.min(1, prev*(0.45+0.75*env))));
+    }
+    return out;
+  }
+
+  /* ---------- 声纹画布 ---------- */
+  function fitCanvas(cv){
+    var r = cv.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio||1, 2);
+    cv.width = Math.max(1, Math.round(r.width*dpr));
+    cv.height = Math.max(1, Math.round(r.height*dpr));
+    var g = cv.getContext("2d");
+    g.setTransform(dpr,0,0,dpr,0,0);
+    return g;
+  }
+  function css(v){ return getComputedStyle(root).getPropertyValue(v).trim(); }
+
+  /* 声纹：连续包络，而不是柱状均衡器——更像一段声音本身 */
+  function drawWave(cv, data, opts){
+    opts = opts || {};
+    var g = fitCanvas(cv);
+    var w = cv.getBoundingClientRect().width, h = cv.getBoundingClientRect().height;
+    g.clearRect(0,0,w,h);
+    var n = data.length, mid = h/2, amp = h*0.45;
+    var upto = (opts.upto == null) ? n-1 : Math.max(1, Math.min(n-1, opts.upto));
+    function envelope(from, to){
+      g.beginPath();
+      g.moveTo(0, mid);
+      for (var i=from;i<=to;i++) g.lineTo(i*(w/(n-1)), mid - data[i]*amp);
+      for (var j=to;j>=from;j--) g.lineTo(j*(w/(n-1)), mid + data[j]*amp);
+      g.closePath();
+    }
+    envelope(0, n-1);
+    g.fillStyle = "rgba(127,166,196,.17)";
+    g.fill();
+    envelope(0, upto);
+    var grd = g.createLinearGradient(0,0,w,0);
+    grd.addColorStop(0, opts.color || css("--dawn"));
+    grd.addColorStop(1, opts.color2 || css("--dawn-soft"));
+    g.fillStyle = grd;
+    g.fill();
+    g.strokeStyle = "rgba(244,241,234,.16)";
+    g.lineWidth = 1;
+    g.beginPath(); g.moveTo(0, mid); g.lineTo(w, mid); g.stroke();
+  }
+
+  /* ---------- Web Audio ---------- */
+  var actx = null, master = null, analyser = null, live = false;
+  function audio(){
+    if (actx) return actx;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    actx = new AC();
+    master = actx.createGain(); master.gain.value = 0.75;
+    /* 钢琴一个音就有 12 个振荡器，一段 16 音旋律会重叠；
+       用压缩器把叠加后的峰值压住，避免削顶失真。 */
+    var comp = actx.createDynamicsCompressor();
+    comp.threshold.value = -14; comp.knee.value = 24; comp.ratio.value = 3.2;
+    comp.attack.value = 0.004; comp.release.value = 0.22;
+    analyser = actx.createAnalyser(); analyser.fftSize = 1024; analyser.smoothingTimeConstant = 0.72;
+    master.connect(comp); comp.connect(analyser); analyser.connect(actx.destination);
+    return actx;
+  }
+
+  /* ---------- 钢琴音色 ----------
+     页面必须单文件、零外部请求，所以不能用采样。用加法合成现场造钢琴。
+     让它像钢琴的是三件事，不是“选个波形”：
+       1) 泛音是**非谐**的： f_n = n·f0·√(1 + B·n²)，B≈0.0006 —— 真实钢琴弦有刚度，
+          高次泛音比整数倍略高，这正是“金属感”的来源；纯整数倍叠出来是风琴。
+       2) **高次泛音先死**：每个分音的衰减时长随次数递减，所以音头亮、尾巴温。
+       3) **击弦瞬态**：开头 6ms 的高通噪声当槌子，缺了它就像弦被抚而不是被敲。
+     另外同音用两根微微失谐的弦（±0.16%）制造钢琴特有的“拍音”。
+     低音延音长、高音短，按频率取。 */
+  var P_N     = [1, 2, 3, 4, 5, 6, 8, 10];
+  var P_GAIN  = [1, .46, .28, .17, .11, .075, .05, .032];
+  function pianoDecay(freq){ return Math.max(0.5, Math.min(3.4, 2.6 * Math.pow(261.63 / freq, 0.45))); }
+  function note(freq, at, dur, gain){
+    if (!actx) return;
+    var t = actx.currentTime + at;
+    var out = actx.createGain();
+    out.gain.value = gain == null ? 0.18 : gain;
+    out.connect(master);
+
+    /* 击弦瞬态 */
+    var n = Math.ceil(actx.sampleRate * 0.006);
+    var buf = actx.createBuffer(1, n, actx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = (Math.random()*2 - 1) * Math.pow(1 - i/n, 2.2);
+    var ns = actx.createBufferSource(); ns.buffer = buf;
+    var nf = actx.createBiquadFilter(); nf.type = "highpass"; nf.frequency.value = 1500;
+    var ng = actx.createGain();
+    ng.gain.setValueAtTime(0.0001, t);
+    ng.gain.linearRampToValueAtTime(0.14, t + 0.0015);
+    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+    ns.connect(nf); nf.connect(ng); ng.connect(out);
+    ns.start(t); ns.stop(t + 0.06);
+
+    /* 弦：非谐泛音 + 高阶先衰减 + 双弦失谐 */
+    var B = 0.0006;
+    var natural = pianoDecay(freq);
+    var life = Math.min(natural, Math.max((dur || 0.6) * 1.6, 0.45));
+    for (var k = 0; k < P_N.length; k++){
+      var m = P_N[k];
+      var f = freq * m * Math.sqrt(1 + B * m * m);
+      if (f > actx.sampleRate / 2 - 600) continue;
+      var pg = actx.createGain();
+      var pk = life / (1 + (m - 1) * 0.42);          /* 高次泛音衰减更快 */
+      pg.gain.setValueAtTime(0.0001, t);
+      pg.gain.linearRampToValueAtTime(P_GAIN[k], t + 0.003 + k * 0.0011);
+      pg.gain.exponentialRampToValueAtTime(0.0001, t + pk);
+      for (var s = 0; s < 2; s++){
+        var o = actx.createOscillator();
+        o.type = "sine";
+        o.frequency.value = f * (s ? 1.0016 : 0.9984);
+        var og = actx.createGain(); og.gain.value = s ? 0.42 : 1;
+        o.connect(og); og.connect(pg);
+        o.start(t); o.stop(t + pk + 0.08);
+      }
+      pg.connect(out);
+    }
+  }
+  var PENT = [0,2,4,7,9,12,14,16,19,21,24];
+  function hz(semi){ return 261.63 * Math.pow(2, semi/12); }
+
+  /* ---------- 左轨 / 顶栏 声纹 ---------- */
+  var RAIL_N = 88, TOP_N = 56;
+  var railBars = document.getElementById("railBars");
+  var topBars = document.getElementById("topBars");
+  var railData = barsFor("听见 青禾艺术 让成长被听见", RAIL_N);
+  var topData = barsFor("听见 青禾艺术 让成长被听见", TOP_N);
+  railData.forEach(function(v){
+    var d = document.createElement("span"); d.className="bar";
+    d.style.width = (18 + v*46).toFixed(1) + "px"; railBars.appendChild(d);
+  });
+  topData.forEach(function(v){
+    var d = document.createElement("i"); d.style.height = (18 + v*80).toFixed(0) + "%"; topBars.appendChild(d);
+  });
+  var railEls = railBars.children, topEls = topBars.children;
+  var railNeedle = document.getElementById("railNeedle");
+
+  /* ---------- 滚动驱动 ---------- */
+  var ticking = false;
+  function onScroll(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      ticking = false;
+      var doc = document.documentElement;
+      var max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      var p = Math.min(1, Math.max(0, (window.scrollY||doc.scrollTop)/max));
+      if (!reduce.matches){
+        root.style.setProperty("--dawn-angle", (205 - 48*p).toFixed(2));
+      } else {
+        root.style.setProperty("--dawn-angle", "181");
+      }
+      var rn = Math.round(p*RAIL_N), tn = Math.round(p*TOP_N);
+      for (var i=0;i<RAIL_N;i++) railEls[i].classList.toggle("on", i<rn);
+      for (var j=0;j<TOP_N;j++) topEls[j].classList.toggle("on", j<tn);
+      if (railNeedle) railNeedle.style.top = (p*100).toFixed(2) + "%";
+    });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  window.addEventListener("resize", onScroll);
+
+  /* ---------- 章节 scroll-spy ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll(".chapters a"));
+  var secs = links.map(function(a){ return document.querySelector(a.getAttribute("href")); });
+  var chapterNow = document.getElementById("chapterNow");
+  var chapterNames = "一二三四五六七";
+  function spy(){
+    var y = window.scrollY + window.innerHeight*0.34, idx = 0;
+    for (var i=0;i<secs.length;i++){ if (secs[i] && secs[i].offsetTop <= y) idx = i; }
+    links.forEach(function(a,i){ a.setAttribute("aria-current", i===idx ? "true" : "false"); });
+    if (chapterNow) chapterNow.textContent = chapterNames.charAt(idx) + " / 七";
+  }
+  window.addEventListener("scroll", spy, {passive:true});
+
+  /* ---------- 首屏：按住发声 ---------- */
+  var voiceCv = document.getElementById("voiceCanvas");
+  var soundKey = document.getElementById("soundKey");
+  var idle = barsFor("青禾艺术 听见 从音乐出发，建立一生的感受力与表达力", 64);
+  var staticData = idle.slice();
+
+  function paintVoice(){
+    if (live && analyser){
+      var buf = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteTimeDomainData(buf);
+      var n = 64, out = [];
+      for (var i=0;i<n;i++){
+        var a = buf[Math.floor(i*buf.length/n)];
+        var b = buf[Math.floor((i+1)*buf.length/n)];
+        var v = Math.abs((a-128) + (b-128))/2/128;
+        out.push(Math.max(0.06, Math.min(1, v*3.4)));
+      }
+      drawWave(voiceCv, out, {color:css("--dawn-soft")});
+      requestAnimationFrame(paintVoice);
+    } else {
+      drawWave(voiceCv, staticData, {color:css("--dawn"), dim:"rgba(127,166,196,.22)"});
+    }
+  }
+  function startVoice(){
+    var a = audio();
+    if (!a){ soundKey.setAttribute("aria-pressed","false"); return; }
+    if (a.state === "suspended") a.resume();
+    soundKey.setAttribute("aria-pressed","true");
+    live = true;
+    var base = PENT[4];
+    note(hz(base), 0, 2.6, 0.14);
+    note(hz(base+7), 0.035, 2.4, 0.075);
+    note(hz(base+12), 0.07, 2.2, 0.042);
+    paintVoice();
+  }
+  function stopVoice(){
+    soundKey.setAttribute("aria-pressed","false");
+    if (!live) return;
+    live = false;
+    setTimeout(function(){ if(!live) paintVoice(); }, 60);
+  }
+  ["pointerdown","keydown"].forEach(function(ev){
+    soundKey.addEventListener(ev, function(e){
+      if (ev === "keydown" && e.key !== " " && e.key !== "Enter") return;
+      e.preventDefault(); startVoice();
+    });
+  });
+  ["pointerup","pointercancel","pointerleave","keyup","blur"].forEach(function(ev){
+    soundKey.addEventListener(ev, function(){ stopVoice(); });
+  });
+
+  /* ---------- 四个身份 ---------- */
+  var roleCv = document.getElementById("roleCanvas");
+  var roleNames = ["新家长","在读家长","老师","您"];
+  function drawRole(i){
+    var g = fitCanvas(roleCv);
+    var w = roleCv.getBoundingClientRect().width, h = roleCv.getBoundingClientRect().height;
+    g.clearRect(0,0,w,h);
+    g.fillStyle = "rgba(127,166,196,.07)";
+    g.fillRect(0,0,w,h);
+    var pad = 14, top = h*0.18;
+
+    /* 视觉语言：一律 1px 冷色描边 + 内部细线表示文字，不出现实心灰块；
+       只有被强调的那一个是琥珀实心。目标是读成“机器画的界面示意图”，
+       而不是“还没加载出来的骨架占位”。 */
+    var COLD = "rgba(127,166,196,";
+    function frame(x,y,bw,bh,a){
+      g.strokeStyle = COLD + (a||0.42) + ")"; g.lineWidth = 1;
+      g.strokeRect(x+0.5, y+0.5, Math.max(1,bw-1), Math.max(1,bh-1));
+    }
+    function textLine(x,y,bw,a,hgt){
+      g.fillStyle = COLD + (a||0.5) + ")";
+      g.fillRect(x, y, Math.max(1,bw), hgt||2);
+    }
+    function solid(x,y,bw,bh,col){ g.fillStyle = col; g.fillRect(x,y,bw,bh); }
+
+    g.fillStyle = css("--dawn-soft");
+    g.font = "600 12px ui-monospace, Menlo, monospace";
+    g.fillText(roleNames[i], pad, top-4);
+
+    if (i === 0){                       /* 新家长：公开页 = 标题 + 三列卡片 */
+      solid(pad, top, w*0.46, 3, css("--dawn"));
+      textLine(pad, top+12, w*0.3, .42);
+      var cw = (w-2*pad-16)/3;
+      for (var k=0;k<3;k++){
+        var cx = pad + k*(cw+8);
+        frame(cx, top+34, cw, h-top-56);
+        textLine(cx+7, top+44, cw-14, .5);
+        textLine(cx+7, top+53, cw*0.55, .3);
+      }
+    } else if (i === 1){                /* 在读家长：一条时间轴 + 每站一张小卡 */
+      solid(pad, top, w*0.36, 3, css("--dawn"));
+      var ty = h*0.6;
+      g.strokeStyle = COLD + ".5)"; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(pad, ty); g.lineTo(w-pad, ty); g.stroke();
+      for (var m=0;m<5;m++){
+        var x = pad + m*(w-2*pad)/4;
+        g.beginPath(); g.arc(x, ty, 3.5, 0, 6.3);
+        if (m===4){ g.fillStyle = css("--dawn"); g.fill(); }
+        else { g.strokeStyle = COLD + ".55)"; g.stroke(); }
+        frame(x-10, ty+10, 20, 16, .34);
+        textLine(x-6, ty+16, 12, .3);
+      }
+    } else if (i === 2){                /* 老师：课表网格，一格是当堂 */
+      solid(pad, top, w*0.3, 3, css("--dawn"));
+      var gw=(w-2*pad)/4, gh=(h-top-40)/3;
+      for (var r=0;r<3;r++) for (var c=0;c<4;c++){
+        var gx = pad + c*gw, gy = top+22 + r*gh;
+        if (r===1&&c===2) solid(gx+2, gy+2, gw-6, gh-6, css("--dawn"));
+        else frame(gx+2, gy+2, gw-6, gh-6, .32);
+      }
+    } else {                            /* 您：一排数字 + 说明 */
+      solid(pad, top, w*0.26, 3, css("--dawn"));
+      var bw2 = (w-2*pad-24)/4;
+      for (var q=0;q<4;q++){
+        var qx = pad + q*(bw2+8);
+        frame(qx, top+22, bw2, 18, .45);
+        textLine(qx+5, top+29, bw2*0.55, .6, 3);
+        textLine(qx, top+48, bw2*0.7, .3);
+      }
+    }
+  }
+  var segs = Array.prototype.slice.call(document.querySelectorAll("#roles .seg"));
+  segs.forEach(function(b){
+    b.addEventListener("click", function(){
+      segs.forEach(function(o){ o.setAttribute("aria-pressed", o===b ? "true":"false"); });
+      drawRole(Number(b.dataset.i));
+      var a = audio(); if (a && a.state==="suspended") a.resume();
+      note(hz(PENT[2 + Number(b.dataset.i)*2]), 0, 0.9, 0.075);
+    });
+  });
+
+  /* ---------- 成长时间轴 ---------- */
+  var axisCv = document.getElementById("axisCanvas");
+  var nodes = Array.prototype.slice.call(document.querySelectorAll("#axisTrack .nodetab"));
+  var axisData = nodes.map(function(n){ return barsFor(n.querySelector(".ntext").textContent.trim(), 72); });
+  function paintAxis(i, upto){
+    drawWave(axisCv, axisData[i], {color:css("--dawn"), dim:"rgba(127,166,196,.2)", upto:upto});
+  }
+  nodes.forEach(function(b){
+    b.addEventListener("click", function(){
+      nodes.forEach(function(o){ o.setAttribute("aria-pressed", o===b ? "true":"false"); });
+      paintAxis(Number(b.dataset.i), null);
+      var a = audio(); if (a && a.state==="suspended") a.resume();
+      note(hz(PENT[Number(b.dataset.i)*2]), 0, 0.7, 0.058);
+    });
+  });
+
+  /* ---------- 按住三秒，模拟三十秒 ---------- */
+  var recKey = document.getElementById("recKey");
+  var recBar = document.getElementById("recBar");
+  var recStatus = document.getElementById("recStatus");
+  var recRaf = null, recStart = 0, recHold = false, recDone = false;
+  var HOLD = 3000;
+  function recTick(now){
+    if (!recHold) return;
+    var p = Math.min(1, (now - recStart)/HOLD);
+    recBar.style.width = (p*100).toFixed(1) + "%";
+    recStatus.textContent = "正在记录… " + Math.round(p*30) + " / 30 秒";
+    recStatus.classList.remove("done");
+    paintAxis(3, Math.round(p*71));
+    if (p >= 1){
+      recHold = false; recDone = true;
+      recKey.setAttribute("aria-pressed","false");
+      recStatus.textContent = "已存进这条时间轴";
+      recStatus.classList.add("done");
+      if (!reduce.matches){ note(hz(PENT[7]), 0, 1.1, 0.105); note(hz(PENT[9]), 0.12, 1.3, 0.072); }
+      return;
+    }
+    recRaf = requestAnimationFrame(recTick);
+  }
+  function recStartFn(){
+    var a = audio(); if (a && a.state==="suspended") a.resume();
+    if (recDone){ recDone = false; recBar.style.width="0%"; }
+    recHold = true; recStart = performance.now();
+    recKey.setAttribute("aria-pressed","true");
+    recStatus.textContent = "正在记录… 0 / 30 秒";
+    recStatus.classList.remove("done");
+    if (recRaf) cancelAnimationFrame(recRaf);
+    recRaf = requestAnimationFrame(recTick);
+  }
+  function recStopFn(){
+    if (!recHold) return;
+    recHold = false;
+    if (recRaf) cancelAnimationFrame(recRaf);
+    recKey.setAttribute("aria-pressed","false");
+    if (!recDone){
+      recStatus.textContent = "松手了，这一段没有留下";
+      recStatus.classList.remove("done");
+      paintAxis(3, null);
+      recBar.style.width = "0%";
+    }
+  }
+  recKey.addEventListener("pointerdown", function(e){ e.preventDefault(); recStartFn(); });
+  recKey.addEventListener("keydown", function(e){ if (e.key===" "||e.key==="Enter"){ e.preventDefault(); recStartFn(); } });
+  ["pointerup","pointercancel","pointerleave","keyup","blur"].forEach(function(ev){
+    recKey.addEventListener(ev, recStopFn);
+  });
+
+  /* ---------- AI 音乐创作 ---------- */
+  var scoreCv = document.getElementById("scoreCanvas");
+  var artCv = document.getElementById("artCanvas");
+  var srcBtns = Array.prototype.slice.call(document.querySelectorAll("#srcs .srcbtn"));
+  var SRC_SEED = ["哼一段自己想到的旋律","用几句话描述今天的心情","那天的天空、那只猫、那场雨"];
+
+  function drawScore(i, playhead){
+    var g = fitCanvas(scoreCv);
+    var w = scoreCv.getBoundingClientRect().width, h = scoreCv.getBoundingClientRect().height;
+    g.clearRect(0,0,w,h);
+    g.fillStyle = "rgba(127,166,196,.08)"; g.fillRect(0,0,w,h);
+    var lines = 5, top = h*0.2, gap = (h*0.6)/(lines-1);
+    g.strokeStyle = "rgba(127,166,196,.3)"; g.lineWidth = 1;
+    for (var L=0; L<lines; L++){
+      g.beginPath(); g.moveTo(0, top+L*gap); g.lineTo(w, top+L*gap); g.stroke();
+    }
+    var r = rng(hashSeed(SRC_SEED[i])), notes = 16, step = (w-24)/notes;
+    g.lineWidth = 3; g.lineCap = "round";
+    for (var n=0; n<notes; n++){
+      var deg = PENT[Math.floor(r()*PENT.length)];
+      var y = top + gap*4 - (deg/24)*gap*4;
+      g.strokeStyle = (playhead!=null && n>playhead) ? "rgba(127,166,196,.35)" : css("--dawn");
+      g.beginPath(); g.moveTo(12+n*step, y); g.lineTo(12+n*step+step*0.62, y); g.stroke();
+      if (n%4===0){ g.beginPath(); g.arc(12+n*step, y, 3.4, 0, 6.3); g.fillStyle = css("--dawn-soft"); g.fill(); }
+    }
+  }
+  function drawArt(i){
+    var g = fitCanvas(artCv);
+    var w = artCv.getBoundingClientRect().width, h = artCv.getBoundingClientRect().height;
+    g.clearRect(0,0,w,h);
+    g.fillStyle = "#0B1826"; g.fillRect(0,0,w,h);
+    var r = rng(hashSeed(SRC_SEED[i] + "画"));
+    if (i === 0){                        /* 旋律：同心弧 */
+      for (var k=0;k<9;k++){
+        g.beginPath();
+        g.arc(w*0.5, h*0.62, 14 + k*13 + r()*6, Math.PI*1.08, Math.PI*1.92);
+        g.strokeStyle = "rgba(242,179,61," + (0.62 - k*0.055).toFixed(2) + ")";
+        g.lineWidth = 2.2; g.stroke();
+      }
+    } else if (i === 1){                 /* 心情：横向色带 */
+      for (var m=0;m<7;m++){
+        var y = h*0.16 + m*(h*0.68/7);
+        g.fillStyle = m%2 ? "rgba(242,179,61,"+(0.1+r()*0.28).toFixed(2)+")" : "rgba(127,166,196,"+(0.1+r()*0.24).toFixed(2)+")";
+        g.fillRect(w*0.08 + r()*w*0.1, y, w*(0.5+r()*0.36), h*0.68/7*0.62);
+      }
+    } else {                             /* 照片：天空 / 猫 / 雨 */
+      var grd = g.createLinearGradient(0,0,0,h);
+      grd.addColorStop(0,"rgba(127,166,196,.30)"); grd.addColorStop(1,"rgba(242,179,61,.14)");
+      g.fillStyle = grd; g.fillRect(0,0,w,h);
+      g.strokeStyle = "rgba(244,241,234,.34)"; g.lineWidth = 1;
+      for (var d=0; d<46; d++){
+        var x = r()*w, y2 = r()*h*0.8, len = 6+r()*16;
+        g.beginPath(); g.moveTo(x,y2); g.lineTo(x-3, y2+len); g.stroke();
+      }
+      g.fillStyle = "rgba(8,19,31,.9)";
+      g.beginPath();
+      g.moveTo(w*0.62, h*0.82);
+      g.quadraticCurveTo(w*0.7, h*0.5, w*0.82, h*0.6);
+      g.quadraticCurveTo(w*0.9, h*0.66, w*0.86, h*0.84);
+      g.closePath(); g.fill();
+    }
+    g.fillStyle = "rgba(244,241,234,.5)";
+    g.font = "12px ui-monospace, Menlo, monospace";
+    g.fillText("概念演示", 12, h-12);
+  }
+  var playTimers = [];
+  function playMelody(i){
+    playTimers.forEach(clearTimeout); playTimers = [];
+    var a = audio();
+    if (!a){ return; }
+    if (a.state === "suspended") a.resume();
+    var r = rng(hashSeed(SRC_SEED[i])), notes = 16, t = 0;
+    for (var n=0; n<notes; n++){
+      var deg = PENT[Math.floor(r()*PENT.length)];
+      (function(n, deg, t){
+        note(hz(deg), t, 0.62, 0.088);
+        if (n % 4 === 0) note(hz(deg-12), t, 0.9, 0.05);
+        playTimers.push(setTimeout(function(){ drawScore(i, n); }, Math.max(0, t*1000)));
+      })(n, deg, t);
+      t += 0.26;
+    }
+    playTimers.push(setTimeout(function(){ drawScore(i, notes); }, (t*1000)+260));
+  }
+  srcBtns.forEach(function(b){
+    b.addEventListener("click", function(){
+      var i = Number(b.dataset.i);
+      srcBtns.forEach(function(o){ o.setAttribute("aria-pressed", o===b ? "true":"false"); });
+      drawScore(i, null); drawArt(i); playMelody(i);
+    });
+  });
+
+  /* ---------- 初始化 ---------- */
+  function init(){
+    paintVoice();
+    drawRole(0);
+    paintAxis(0, null);
+    drawScore(0, null);
+    drawArt(0);
+    onScroll(); spy();
+  }
+  if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(init, 0);
+  else document.addEventListener("DOMContentLoaded", init);
+  window.addEventListener("resize", function(){
+    paintVoice(); drawRole(Number((document.querySelector('#roles .seg[aria-pressed="true"]')||{dataset:{i:0}}).dataset.i));
+    var cur = Number((document.querySelector('#axisTrack .nodetab[aria-pressed="true"]')||{dataset:{i:0}}).dataset.i);
+    paintAxis(cur, null);
+    var cs = Number((document.querySelector('#srcs .srcbtn[aria-pressed="true"]')||{dataset:{i:0}}).dataset.i);
+    drawScore(cs, null); drawArt(cs);
+  });
+  if (reduce.addEventListener) reduce.addEventListener("change", function(){ onScroll(); });
+})();
+</script>
+</body>
+</html>
